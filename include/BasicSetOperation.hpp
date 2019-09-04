@@ -25,8 +25,8 @@
 */
 
 #pragma once
-#ifndef __BASIC_SET_OPERATIONS_CLI__
-#define  __BASIC_SET_OPERATIONS_CLI__
+#ifndef __BASIC_SET_OPERATIONS_CLI_HPP__
+#define  __BASIC_SET_OPERATIONS_CLI_HPP__
 
 /*
 *	Global includes, cli dll exports
@@ -35,35 +35,21 @@
 #pragma unmanaged
 
 	#include <iostream>
-	#include <string>
 
 #pragma managed
 
 	#using <System.dll>
 	#using <System.Core.dll>
 
-	#include <vcclr.h>
-	#include <msclr\marshal_cppstd.h>
+	#include "./Converter.hpp"
 
 #pragma unmanaged
 #pragma endregion
 
 #pragma managed
-namespace __InvokingCLR_Set_BasicOperation
+namespace __InvokingCLR
 {
 	using SetOperand = System::Collections::Generic::List<System::String^>^;
-
-	/*
-	*	Some converting c++17/cli <-> c++17
-	*/
-	public ref class __InvokingCLR_Convert
-	{
-	public:
-		inline static System::String^ __std_str_to_cli_str(std::string const& convertible);
-		inline static std::string __cli_str_to_std_str(System::String^ convertible);
-
-		inline static SetOperand __cli_str_to_list(System::String^ convertible);
-	};
 
 	/*
 	*	 Implementation of basic set operation :
@@ -73,47 +59,59 @@ namespace __InvokingCLR_Set_BasicOperation
 	*	- complement
 	*	Methods take a two Lists which contains Strings and returning String
 	*/
-	public ref class __InvokingCLR_BasicSetSolving
+	public ref class BasicSetSolving
 	{
 	public:
-		inline static System::String^ __union(SetOperand left, SetOperand right);
-		inline static System::String^ __intersection(SetOperand left, SetOperand right);
-		inline static System::String^ __substraction(SetOperand left, SetOperand right);
-		inline static System::String^ __complement(SetOperand left, SetOperand right);
-	private:
-		static System::String^ __error_str = gcnew System::String("Not enough data");
+		inline static SetOperand __union(SetOperand left, SetOperand right);
+		inline static SetOperand __intersection(SetOperand left, SetOperand right);
+		inline static SetOperand __substraction(SetOperand left, SetOperand right);
+		inline static SetOperand __complement(SetOperand left, SetOperand right);
 	};
 	
 	/*
 	*	Some preprocessor definitions
-	*	which simplify using __InvokingCLR_BasicSetSolving
+	*	which simplify using BasicSetSolving
 	*
 	*	Should use __InvokingCLR_Basic_Solve with one of four
 	*	types of operations
 	*/
 	#pragma region __InvokingCLR_Preprocessor_definitions
 
-	#define __InvokingCLR_Basic__UNION			__InvokingCLR_Set_BasicOperation::__InvokingCLR_BasicSetSolving::__union
-	#define __InvokingCLR_Basic__INTERSECTION	__InvokingCLR_Set_BasicOperation::__InvokingCLR_BasicSetSolving::__intersection
-	#define __InvokingCLR_Basic__SUBSTRACTION	__InvokingCLR_Set_BasicOperation::__InvokingCLR_BasicSetSolving::__substraction
-	#define __InvokingCLR_Basic__COMPLEMENT		__InvokingCLR_Set_BasicOperation::__InvokingCLR_BasicSetSolving::__complement
+	#define __InvokingCLR_Basic__UNION			__InvokingCLR::BasicSetSolving::__union
+	#define __InvokingCLR_Basic__INTERSECTION	__InvokingCLR::BasicSetSolving::__intersection
+	#define __InvokingCLR_Basic__SUBSTRACTION	__InvokingCLR::BasicSetSolving::__substraction
+	#define __InvokingCLR_Basic__COMPLEMENT		__InvokingCLR::BasicSetSolving::__complement
 
-	#define __InvokingCLR_Basic_Prepare_Solving(operand)							\
-		 __InvokingCLR_Set_BasicOperation::__InvokingCLR_Convert::__cli_str_to_list \
-		(																			\
-			__InvokingCLR_Set_BasicOperation::__InvokingCLR_Convert					\
-			::__std_str_to_cli_str((operand))										\
+	/*
+	*	Returns Set which contains elements of
+	*	operand that was converted to System::String^
+	*/
+	#define __InvokingCLR_Basic_Prepare_Solving(operand)		\
+		__InvokingCLR::Converter::__make_set_from_list			\
+		(														\
+			__InvokingCLR::Converter::__cli_str_to_list			\
+			(													\
+				__InvokingCLR::Converter::__std_str_to_cli_str	\
+				((operand))										\
+			)													\
 		)
-	#define __InvokingCLR_Basic_Solve(left_set, right_set, operation)				\
-		(operation)																	\
-		(																			\
-			__InvokingCLR_Basic_Prepare_Solving(left_set),							\
-			__InvokingCLR_Basic_Prepare_Solving(right_set)							\
-		);
 
+	/*
+	*	Returns System::String^ which contains elements
+	*	of the set after basic operation
+	*/
+	#define __InvokingCLR_Basic_Solve(left_set, right_set, operation)		\
+		__InvokingCLR::Converter::__list_to_cli_str							\
+		(																	\
+			(operation)														\
+			(																\
+				__InvokingCLR_Basic_Prepare_Solving((left_set)), 			\
+				__InvokingCLR_Basic_Prepare_Solving((right_set))			\
+			)																\
+		)
 	#pragma endregion 
 	// __InvokingCLR_Preprocessor_definitions
 };
 #pragma unmanaged
 
-#endif // !__BASIC_SET_OPERATIONS_CLI__
+#endif // !__BASIC_SET_OPERATIONS_CLI_HPP__

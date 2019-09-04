@@ -27,9 +27,8 @@
 *
 */
 
-
 #pragma managed
-#include "../include/BasicSetOperation.hpp"
+#include "./../include/BasicSetOperation.hpp"
 #pragma unmanaged
 
 //#include <Windows.h>
