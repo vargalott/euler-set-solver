@@ -26,7 +26,7 @@
 
 #pragma once
 #ifndef __BASIC_SET_OPERATIONS_CLI_HPP__
-#define  __BASIC_SET_OPERATIONS_CLI_HPP__
+#define __BASIC_SET_OPERATIONS_CLI_HPP__
 
 /*
 *	Global includes, cli dll exports
@@ -66,6 +66,7 @@ namespace __InvokingCLR
 		inline static SetOperand __intersection(SetOperand left, SetOperand right);
 		inline static SetOperand __substraction(SetOperand left, SetOperand right);
 		inline static SetOperand __complement(SetOperand left, SetOperand right);
+		inline static SetOperand __addition(SetOperand left, SetOperand right);
 	};
 	
 	/*

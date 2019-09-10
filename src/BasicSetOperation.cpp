@@ -60,6 +60,22 @@ inline SetOperand __InvokingCLR::BasicSetSolving::__complement(SetOperand left, 
 	auto su1 = BasicSetSolving::__substraction(left, right);
 	auto su2 = BasicSetSolving::__substraction(right, left);
 	return BasicSetSolving::__union(su1, su2);
+}
+inline SetOperand __InvokingCLR::BasicSetSolving::__addition(SetOperand left, SetOperand right)
+{
+	return
+		(
+			System::Linq::Enumerable::Any(left) || System::Linq::Enumerable::Any(right) ?
+			Converter::__cli_str_to_list
+			(
+				System::Text::RegularExpressions::Regex::Replace
+				(
+					System::String::Join(" ", System::Linq::Enumerable::Except(right, left)),
+					"[ ]+", " "
+				)
+			) :
+			nullptr
+			);
 };
 
 #pragma unmanaged
