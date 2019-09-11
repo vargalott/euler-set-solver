@@ -105,8 +105,8 @@ __InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
 
 		++this->current_operation;
 
-		if (expr->GetToken() == "_");
-		// TODO: implement addition
+		if (expr->GetToken() == "_")
+			return set->__compute_addition(this->sets["Z"]);
 
 		throw gcnew System::Exception("unknow unary operation");
 	};

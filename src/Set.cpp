@@ -27,7 +27,10 @@ inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_union(Set^ operand)
 {
 	Set^ result = gcnew Set();
 	result->name = this->name + " n " + operand->name;
-	result->set = __InvokingCLR::BasicSetSolving::__union(this->set, operand->set);
+	if (this->set != nullptr)
+		result->set = __InvokingCLR::BasicSetSolving::__union(this->set, operand->set);
+	else
+		result->set = __InvokingCLR::BasicSetSolving::__union(operand->set, operand->set);
 	return result;
 };
 inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_intersection(Set^ operand)

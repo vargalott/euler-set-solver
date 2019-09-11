@@ -75,7 +75,7 @@ inline SetOperand __InvokingCLR::BasicSetSolving::__addition(SetOperand left, Se
 				)
 			) :
 			nullptr
-			);
+		);
 };
 
 #pragma unmanaged

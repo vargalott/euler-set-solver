@@ -82,6 +82,7 @@ namespace __InvokingCLR
 	#define __InvokingCLR_Basic__INTERSECTION	__InvokingCLR::BasicSetSolving::__intersection
 	#define __InvokingCLR_Basic__SUBSTRACTION	__InvokingCLR::BasicSetSolving::__substraction
 	#define __InvokingCLR_Basic__COMPLEMENT		__InvokingCLR::BasicSetSolving::__complement
+	#define __InvokingCLR_Basic__ADDITION		__InvokingCLR::BasicSetSolving::__addition
 
 	/*
 	*	Returns Set which contains elements of

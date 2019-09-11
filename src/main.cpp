@@ -39,22 +39,32 @@
 #pragma managed
 int __cdecl main(void)
 {
-	try
-	{
+	/*
+		TODO
+		fix unary operator "_"
+	*/
+
+
+	//bool isThrowE = false;
+	//try
+	//{
 		__InvokingCLR::Parsing::Run();
-	}
-	catch (System::Exception^ ex)
-	{
-		System::Console::WriteLine(ex->Message);
-	}
-	catch (std::exception& ex)
-	{
-		std::cout << ex.what();
-	}
-	finally
-	{
-		std::cout << "\n\nAn error has occurred ... Exiting...\n";
-	};
+	//}
+	//catch (System::Exception^ ex)
+	//{
+	//	System::Console::WriteLine(ex->Message);	
+	//	isThrowE = !isThrowE;
+	//}
+	//catch (std::exception& ex)
+	//{
+	//	std::cout << ex.what();
+	//	isThrowE = !isThrowE;
+	//}
+	//finally
+	//{
+	//	if (isThrowE)
+	//		std::cout << "\n\nAn error has occurred ... Exiting...\n";
+	//};
 
 	std::cin.get();
 	return 0;

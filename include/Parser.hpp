@@ -122,15 +122,6 @@ namespace __InvokingCLR
 				};
 				return dict;
 			};
-			inline void set(SetDictionary sets)
-			{
-				for each (auto elem in sets)
-				{
-					this->sets->Add(elem.Key, elem.Value);
-					auto x = elem.Value->Set_;
-					this->sets[elem.Key]->Set_ = x;
-				};
-			};
 		};
 		property System::String^ CurrentOperaion
 		{
@@ -147,6 +138,26 @@ namespace __InvokingCLR
 			};
 		};
 
+
+		inline void __Finalize(SetDictionary _sets)
+		{
+			if (_sets == nullptr)
+				_sets = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
+			_sets["Z"] = gcnew Set(SetOperand(), "Z");
+			auto temp = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
+			for each (auto elem in _sets)
+			{
+				if (elem.Key != "Z")
+					temp["Z"] = _sets["Z"]->__compute_union(_sets[elem.Key]);
+			};
+			_sets = temp;
+			this->sets = _sets;
+			for each (auto elem in this->sets)
+			{
+				this->sets->Remove(elem.Key);
+				this->sets->Add(elem.Key, _sets[elem.Key]); // TODO: bug fix - key is not in dict
+			};
+		};
 		Set^ Run(void);
 	private:
 
@@ -176,7 +187,7 @@ namespace __InvokingCLR
 	public ref class Parsing
 	{
 	public:
-		static void Run(void)
+		inline static void Run(void)
 		{
 			System::Console::Write("\n\t\t=== Set calculator ===\n\n\tu - union\n\tn - intersection\n\t+ - complement\n\t\\ - substraction\n\t_ - addition\n\nEnter expr: ");
 
@@ -196,6 +207,7 @@ namespace __InvokingCLR
 				expr->SetsMainGetter->Remove(elem.Key);
 				expr->SetsMainGetter->Add(elem.Key, dict[elem.Key]);
 			};
+			expr->__Finalize(dict);
 
 			auto result = expr->Run();
 
