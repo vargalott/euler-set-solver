@@ -44,50 +44,44 @@
 
 namespace __InvokingCLR
 {
+	ref class Set;
 	using SetOperand = System::Collections::Generic::List<System::String^>^;
 	using SetDictionary = System::Collections::Generic::Dictionary<System::String^, Set^>^;
 
 	public ref class Expression
 	{
 	public:
-		inline explicit Expression(void) = default;
-		//inline explicit Expression(Expression const% obj) : tokens(obj.tokens), args(obj.args) {};
 		inline explicit Expression(System::String^ token) : token(token) {};
 		inline explicit Expression(System::String^ token, Expression^ expr) : token(token)
 		{
+			this->arguments = gcnew System::Collections::Generic::List<Expression^>();
 			this->arguments->Add(expr);
 		};
 		inline explicit Expression(System::String^ token, Expression^ expr_l, Expression^ expr_r) : token(token)
 		{
+			this->arguments = gcnew System::Collections::Generic::List<Expression^>();
 			this->arguments->Add(expr_l);
 			this->arguments->Add(expr_r);
 		};
 
-		inline void print(std::size_t count)
-		{
-			System::String^ tab = "";
-			for (std::size_t t = 0; t < count; ++t)
-				tab += "\t";
-			System::Console::WriteLine(tab + this->token);
-			//for arg in self.args:
-			//	arg.print(tab_count + 1)
-		};
+		//inline void print(std::size_t count)
+		//{
+		//	System::String^ tab = "";
+		//	for (std::size_t t = 0; t < count; ++t)
+		//		tab += "\t";
+		//	System::Console::WriteLine(tab + this->token);
+		//	//for arg in self.args:
+		//	//	arg.print(tab_count + 1)
+		//};
 
-		property System::Collections::Generic::List<Expression^>^ Arguments
+		System::Collections::Generic::List<Expression^>^ GetArguments(void)
 		{
-			inline System::Collections::Generic::List<Expression^>^ get(void)
-			{
-				return this->arguments;
-			};
+			return this->arguments;
 		};
-		property System::String^ Token
+		System::String^ GetToken(void)
 		{
-			inline System::String^ get(void)
-			{
-				return this->token;
-			};
+			return this->token;
 		};
-
 	private:
 		System::String^ token;
 		System::Collections::Generic::List<Expression^>^ arguments;
@@ -97,7 +91,15 @@ namespace __InvokingCLR
 	{
 	public:
 		explicit Set(void) : set(nullptr), name("") {};
-		explicit Set(SetOperand set, System::String^ name) : set(set), name(name) {};
+		explicit Set(SetOperand set, System::String^ name) : name(name)
+		{
+			if (set == nullptr)
+				return;
+			this->set = gcnew System::Collections::Generic::List<System::String^>();
+			for each (auto elem in set)
+				if (elem)
+					this->set->Add(elem);
+		};
 
 		/*
 		*	casting operator to System::String^
@@ -123,10 +125,10 @@ namespace __InvokingCLR
 			{
 				return this->set;
 			};
-			//inline void set(SetOperand set)
-			//{
-			//	this->set = set;
-			//};
+			inline void set(SetOperand set)
+			{
+				this->set = set;
+			};
 		};
 
 		/*
@@ -186,7 +188,6 @@ namespace __InvokingCLR
 		};
 
 	private:
-
 		SetOperand set;
 		System::String^ name;
 	};
@@ -194,13 +195,13 @@ namespace __InvokingCLR
 	public ref class Parser
 	{
 	public:
-		inline explicit Parser(void) = default;
+		//inline explicit Parser(void) = default;
 		inline explicit Parser(System::String^ expression) : iterator(std::size_t(0)), current_operation(std::size_t(1))
 		{
 			this->expression = expression->Replace(" ", "");
 			//this->expression = System::Text::RegularExpressions::Regex::Replace(expression, "[ ]", " ");
 			this->tokens = __InvokingCLR::Converter::__cli_str_to_list(__InvokingCLR::Converter::__std_str_to_cli_str("u n \\ + _ ( )"));
-
+			this->sets = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
 		};
 
 		property SetDictionary Sets
@@ -208,7 +209,7 @@ namespace __InvokingCLR
 			SetDictionary get(void)
 			{
 				std::size_t iterator = std::size_t(0);
-				SetDictionary dict;
+				SetDictionary dict = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
 
 				while (this->expression->Length > iterator)
 				{
@@ -220,12 +221,27 @@ namespace __InvokingCLR
 							name += this->expression[iterator];
 							++iterator;
 						};
-						sets->operator[](name) = Set(SetOperand(), name);
+						dict[name] = gcnew Set(SetOperand(), name);
 					}
 					else
 						++iterator;
 				};
-				return this->sets;
+				return dict;
+			};
+			void set(SetDictionary sets)
+			{
+				//sets["U"] = gcnew Set(SetOperand(), "U");
+
+				//for each (auto elem in sets)
+				//	if (elem.Key != "U")
+				//		sets["U"] = this->__compute_dict_union(sets["U"], sets[elem.Key]);
+
+				for each (auto elem in sets)
+				{
+					this->sets->Add(elem.Key, elem.Value);
+					auto x = elem.Value->Set_;
+					this->sets[elem.Key]->Set_ = x;
+				};
 			};
 		};
 		property System::String^ CurrentOperaion
@@ -235,6 +251,27 @@ namespace __InvokingCLR
 				return this->current_operation + ")";
 			};
 		};
+		property SetDictionary SetsMainGetter
+		{
+			SetDictionary get(void)
+			{
+				return this->sets;
+			};
+		};
+
+		inline Set^ run(void)
+		{
+			return this->__evaluate(this->__parse());
+		};
+
+		
+	private:
+		SetDictionary sets;
+		System::String^ expression;
+		SetOperand tokens;
+		
+
+		std::size_t iterator; std::size_t current_operation;
 
 		/* FIRST */
 		inline std::size_t		__get_priority(System::String^ token)
@@ -260,9 +297,9 @@ namespace __InvokingCLR
 					return name;
 				};
 
-				for each (System::String^ token in this->tokens)
+				for each (System::String ^ token in this->tokens)
 				{
-					if (this->expression->Substring(this->iterator, token->Length))
+					if (this->expression->Substring(this->iterator, token->Length) == token)
 					{
 						this->iterator += token->Length;
 						return token;
@@ -272,7 +309,7 @@ namespace __InvokingCLR
 			return "";
 		};
 
-		/* PRE2-THIRD */ 
+		/* PRE-THIRD */
 		inline Expression^		__parse_be(std::size_t min_p)
 		{
 			Expression^ expr_l = this->__parse_se();
@@ -293,20 +330,20 @@ namespace __InvokingCLR
 			};
 		};
 
-		/* PRE-THIRD */ 
+		/* PRE2-THIRD */
 		inline Expression^		__parse(void)
 		{
 			return this->__parse_be(0);
 		};
 
-		/* THIRD */ 
+		/* THIRD */
 		inline Expression^		__parse_se(void)
 		{
 			System::String^ token = this->__parse_t();
 			if (!token)
 				throw gcnew System::Exception("invalid in");
 			if (System::Char::IsUpper(token, 0))
-				return gcnew Expression(token); // TODO: fix second param
+				return gcnew Expression(token);
 
 			if (token == "(")
 			{
@@ -319,68 +356,62 @@ namespace __InvokingCLR
 			return gcnew Expression(token, this->__parse_se());
 		};
 
-		/* MAIN? */ 
-		inline Set^ evaluate(Expression^ expr)
+		/* STEP-EVAL */
+		inline Set^ __evaluate(Expression^ expr)
 		{
-			switch (expr->Arguments->Count)
+			if (expr->GetArguments() == nullptr)
+				return this->sets[expr->GetToken()];
+			if (expr->GetArguments()->Count == 1)
 			{
-			case 1:
-				Set ^ set = this->evaluate(expr->Arguments[0]);
+				Set^ set = this->__evaluate(expr->GetArguments()[0]);
 
-				System::Console::WriteLine(this->CurrentOperaion + " " + expr->Token + " " + set->Name);
-				System::Console::WriteLine(this->CurrentOperaion + " " + expr->Token + " " + set);
+				System::Console::WriteLine(this->CurrentOperaion + " " + expr->GetToken() + " " + set->Name);
+				System::Console::Write("\t" + expr->GetToken() + " {");
+				for each (auto elem in set->Set_)
+					System::Console::Write(elem + " ");
+				System::Console::Write("}\n");
 
 				++this->current_operation;
 
-				if (expr->Token == "_");
-					// TODO: implement addition
+				if (expr->GetToken() == "_");
+				// TODO: implement addition
 
 				throw gcnew System::Exception("unknow unary operation");
+			};
+			if (expr->GetArguments()->Count == 2)
+			{
+				Set^ set_l = this->__evaluate(expr->GetArguments()[0]);
+				Set^ set_r = this->__evaluate(expr->GetArguments()[1]);
 
-				break;
-			case 2:
-				Set ^ set_l = this->evaluate(expr->Arguments[0]);
-				Set^ set_r = this->evaluate(expr->Arguments[1]);
+				System::Console::WriteLine(this->CurrentOperaion + " " + set_l->Name + " " + expr->GetToken() + " " + set_r->Name);
 
-				System::Console::WriteLine(this->CurrentOperaion + " " + set_l->Name + " " + expr->Token + " " + set_r->Name);
-				System::Console::WriteLine(this->CurrentOperaion + " " + set_l + " " + expr->Token + " " + set_r);
+				System::Console::Write(this->CurrentOperaion +" { ");
+				for each (auto elem in set_l->Set_)
+					System::Console::Write(elem + " ");
+				System::Console::Write("} " + expr->GetToken() + " { ");
+				for each (auto elem in set_r->Set_)
+					System::Console::Write(elem + " ");
+				System::Console::Write("}\n");
+
+
 
 				++this->current_operation;
 
-				if (expr->Token == "u")
+				if (expr->GetToken() == "u")
 					return set_l->__compute_union(set_r);
-				if (expr->Token == "n")
+				if (expr->GetToken() == "n")
 					return set_l->__compute_intersection(set_r);
-				if (expr->Token == "\\")
+				if (expr->GetToken() == "\\")
 					return set_l->__compute_substraction(set_r);
-				if (expr->Token == "+")
+				if (expr->GetToken() == "+")
 					return set_l->__compute_complement(set_r);
 
 				throw gcnew System::Exception("unknow binary operation");
-
-				break;
-			case 0:
-				//return this->sets[expr->Token];
-				break;
-			default:
-				throw gcnew System::Exception("unknow operation");
-			}
+			};
+			throw gcnew System::Exception("unknow operation");
 		};
 
-		inline Set^ run(void)
-		{
-			if (!this->sets);
-				//add sets data
-			return this->evaluate(this->__parse());
-		};
-
-	private:
-		System::String^ expression;
-		SetOperand tokens;
-		SetDictionary sets;
-
-		std::size_t iterator; std::size_t current_operation;
-
+		/* SUB */
 		inline Set^ __compute_dict_union(Set^ set_l, Set^ set_r)
 		{
 			return gcnew Set(__InvokingCLR::BasicSetSolving::__union(set_l->Set_, set_r->Set_), set_l->Name);
@@ -461,9 +492,30 @@ int __cdecl main(void)
 	//};
 #pragma endregion
 
-	
+	System::Console::Write("\n\t\t=== Set calculator ===\n\n\tu - union\n\tn - intersection\n\t+ - complement\n\t\\ - substraction\n\t_ - addition\n\nEnter expr: ");
 
+	System::String^ input = System::Console::ReadLine();
+	auto expr = gcnew __InvokingCLR::Parser(input);
 
+	auto dict = gcnew System::Collections::Generic::Dictionary<System::String^, __InvokingCLR::Set^>();
+
+	for each (auto elem in expr->Sets)
+	{
+		System::Console::Write("Enter {0}: ", elem.Key);
+		__InvokingCLR::SetOperand tmp =__InvokingCLR::Converter::__cli_str_to_list(System::Console::ReadLine());
+		dict[elem.Key] = gcnew __InvokingCLR::Set(tmp, elem.Key);
+	};
+	for each (auto elem in expr->Sets)
+	{
+		expr->SetsMainGetter->Remove(elem.Key);
+		expr->SetsMainGetter->Add(elem.Key, dict[elem.Key]);
+	};
+
+	auto result = expr->run();
+
+	System::Console::Write("Result: ");
+	for each (auto elem in result->Set_)
+		System::Console::Write(elem + " ");
 
 	std::cin.get();
 	return 0;
