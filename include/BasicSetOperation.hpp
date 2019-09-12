@@ -66,7 +66,6 @@ namespace __InvokingCLR
 		inline static SetOperand __intersection(SetOperand left, SetOperand right);
 		inline static SetOperand __substraction(SetOperand left, SetOperand right);
 		inline static SetOperand __complement(SetOperand left, SetOperand right);
-		inline static SetOperand __addition(SetOperand left, SetOperand right);
 	};
 	
 	/*

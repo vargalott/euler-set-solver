@@ -127,7 +127,7 @@ namespace __InvokingCLR
 		{
 			inline System::String^ get(void)
 			{
-				return this->current_operation + ")";
+				return this->current_operation + ": ";
 			};
 		};
 		property SetDictionary SetsMainGetter
@@ -138,26 +138,6 @@ namespace __InvokingCLR
 			};
 		};
 
-
-		inline void __Finalize(SetDictionary _sets)
-		{
-			if (_sets == nullptr)
-				_sets = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
-			_sets["Z"] = gcnew Set(SetOperand(), "Z");
-			auto temp = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
-			for each (auto elem in _sets)
-			{
-				if (elem.Key != "Z")
-					temp["Z"] = _sets["Z"]->__compute_union(_sets[elem.Key]);
-			};
-			_sets = temp;
-			this->sets = _sets;
-			for each (auto elem in this->sets)
-			{
-				this->sets->Remove(elem.Key);
-				this->sets->Add(elem.Key, _sets[elem.Key]); // TODO: bug fix - key is not in dict
-			};
-		};
 		Set^ Run(void);
 	private:
 
@@ -176,8 +156,6 @@ namespace __InvokingCLR
 		Expression^			__parse_se(void);
 		Set^				__evaluate(Expression^ expr);
 
-		Set^				__compute_dict_union(Set^ set_l, Set^ set_r);
-
 #pragma endregion
 	};
 
@@ -189,9 +167,11 @@ namespace __InvokingCLR
 	public:
 		inline static void Run(void)
 		{
-			System::Console::Write("\n\t\t=== Set calculator ===\n\n\tu - union\n\tn - intersection\n\t+ - complement\n\t\\ - substraction\n\t_ - addition\n\nEnter expr: ");
+			System::Console::Write("\n\t\t=== Set calculator ===\n\n\tu - union\n\tn - intersection\n\t+ - complement\n\t\\ - substraction\n\t| - addition\n\nEnter expr: ");
 
 			System::String^ input = System::Console::ReadLine();
+			System::Console::Write("\n");
+
 			auto expr = gcnew __InvokingCLR::Parser(input);
 
 			auto dict = gcnew System::Collections::Generic::Dictionary<System::String^, __InvokingCLR::Set^>();
@@ -202,18 +182,16 @@ namespace __InvokingCLR
 				__InvokingCLR::SetOperand tmp = __InvokingCLR::Converter::__cli_str_to_list(System::Console::ReadLine());
 				dict[elem.Key] = gcnew __InvokingCLR::Set(tmp, elem.Key);
 			};
+			System::Console::Write("\n");
 			for each (auto elem in expr->Sets)
 			{
 				expr->SetsMainGetter->Remove(elem.Key);
 				expr->SetsMainGetter->Add(elem.Key, dict[elem.Key]);
 			};
-			expr->__Finalize(dict);
 
 			auto result = expr->Run();
 
-			System::Console::Write("Result: ");
-			for each (auto elem in result->Set_)
-				System::Console::Write(elem + " ");
+			System::Console::Write("\nResult: {" + cli::safe_cast<System::String^>(result) + "}");
 		};
 	};
 };

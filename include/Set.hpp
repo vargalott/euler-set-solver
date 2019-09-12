@@ -63,7 +63,7 @@ namespace __InvokingCLR
 		/*
 		*	casting operator to System::String^
 		*/
-		operator System::String^(void);
+		explicit operator System::String^(void);
 
 		property System::String^ Name
 		{

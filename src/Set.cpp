@@ -1,4 +1,4 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
+﻿// This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
 #include "./../include/Set.hpp"
@@ -21,12 +21,12 @@ __InvokingCLR::Set::operator System::String^ (void)
 	if (this->set)
 		return __InvokingCLR::Converter::__list_to_cli_str(this->set);
 	else
-		return "{0}";
+		return "{}";
 }
 inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_union(Set^ operand)
 {
 	Set^ result = gcnew Set();
-	result->name = this->name + " n " + operand->name;
+	result->name = this->name + "u" + operand->name;
 	if (this->set != nullptr)
 		result->set = __InvokingCLR::BasicSetSolving::__union(this->set, operand->set);
 	else
@@ -36,29 +36,29 @@ inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_union(Set^ operand)
 inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_intersection(Set^ operand)
 {
 	Set^ result = gcnew Set();
-	result->name = this->name + " n " + operand->name;
+	result->name = this->name + "n" + operand->name;
 	result->set = __InvokingCLR::BasicSetSolving::__intersection(this->set, operand->set);
 	return result;
 };
 inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_complement(Set^ operand)
 {
 	Set^ result = gcnew Set();
-	result->name = this->name + " n " + operand->name;
+	result->name = this->name + "+" + operand->name;
 	result->set = __InvokingCLR::BasicSetSolving::__complement(this->set, operand->set);
 	return result;
 };
 inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_substraction(Set^ operand)
 {
 	Set^ result = gcnew Set();
-	result->name = this->name + " n " + operand->name;
+	result->name = this->name + "\\" + operand->name;
 	result->set = __InvokingCLR::BasicSetSolving::__substraction(this->set, operand->set);
 	return result;
 };
 inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_addition(Set^ operand)
 {
 	Set^ result = gcnew Set();
-	result->name = this->name + " n " + operand->name;
-	result->set = __InvokingCLR::BasicSetSolving::__addition(this->set, operand->set);
+	result->name = "|" + this->name;
+	result->set = __InvokingCLR::BasicSetSolving::__substraction(operand->set, this->set);
 	return result;
 };
 
