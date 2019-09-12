@@ -1,6 +1,11 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
+#pragma warning(push)
+#pragma warning(disable:4677)
+#pragma warning(disable:4267)
+#pragma warning(disable:4506)
+
 #include "./../include/BasicSetOperation.hpp"
 
 #pragma managed
@@ -55,7 +60,7 @@ inline SetOperand __InvokingCLR::BasicSetSolving::__substraction(SetOperand left
 		nullptr
 	);
 };
-inline SetOperand __InvokingCLR::BasicSetSolving::__complement(SetOperand left, SetOperand right)
+inline SetOperand __InvokingCLR::BasicSetSolving::__s_difference(SetOperand left, SetOperand right)
 {
 	auto su1 = BasicSetSolving::__substraction(left, right);
 	auto su2 = BasicSetSolving::__substraction(right, left);
@@ -63,3 +68,4 @@ inline SetOperand __InvokingCLR::BasicSetSolving::__complement(SetOperand left, 
 }
 
 #pragma unmanaged
+#pragma warning(pop)

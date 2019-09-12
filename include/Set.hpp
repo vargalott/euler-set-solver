@@ -98,7 +98,7 @@ namespace __InvokingCLR
 		*	Computing sets complement
 		*	openard to parse - "+"
 		*/
-		inline Set^ __compute_complement(Set^ operand);
+		inline Set^ __compute_s_difference(Set^ operand);
 		/*
 		*	Computing sets substraction
 		*	openard to parse - "\"
@@ -108,7 +108,7 @@ namespace __InvokingCLR
 		*	Computing sets addition
 		*	openard to parse - "_"
 		*/
-		inline Set^ __compute_addition(Set^ operand);
+		inline Set^ __compute_complement(Set^ operand);
 
 	private:
 		SetOperand set;

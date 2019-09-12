@@ -1,6 +1,11 @@
 ﻿// This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
+#pragma warning(push)
+#pragma warning(disable:4677)
+#pragma warning(disable:4267)
+#pragma warning(disable:4506)
+
 #include "./../include/Set.hpp"
 
 #pragma managed
@@ -40,11 +45,11 @@ inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_intersection(Set^ opera
 	result->set = __InvokingCLR::BasicSetSolving::__intersection(this->set, operand->set);
 	return result;
 };
-inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_complement(Set^ operand)
+inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_s_difference(Set^ operand)
 {
 	Set^ result = gcnew Set();
 	result->name = this->name + "+" + operand->name;
-	result->set = __InvokingCLR::BasicSetSolving::__complement(this->set, operand->set);
+	result->set = __InvokingCLR::BasicSetSolving::__s_difference(this->set, operand->set);
 	return result;
 };
 inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_substraction(Set^ operand)
@@ -54,7 +59,7 @@ inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_substraction(Set^ opera
 	result->set = __InvokingCLR::BasicSetSolving::__substraction(this->set, operand->set);
 	return result;
 };
-inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_addition(Set^ operand)
+inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_complement(Set^ operand)
 {
 	Set^ result = gcnew Set();
 	result->name = "|" + this->name;
@@ -63,3 +68,4 @@ inline __InvokingCLR::Set^ __InvokingCLR::Set::__compute_addition(Set^ operand)
 };
 
 #pragma unmanaged
+#pragma warning(pop)

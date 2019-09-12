@@ -26,6 +26,10 @@
 *	SOFTWARE.
 *
 */
+#pragma warning(push)
+#pragma warning(disable:4677)
+#pragma warning(disable:4267)
+#pragma warning(disable:4506)
 
 #pragma unmanaged
 #include <stdexcept>
@@ -39,34 +43,29 @@
 #pragma managed
 int __cdecl main(void)
 {
-	/*
-		TODO
-		fix unary operator "_"
-	*/
-
-
-	//bool isThrowE = false;
-	//try
-	//{
+	bool isThrowE = false;
+	try
+	{
 		__InvokingCLR::Parsing::Run();
-	//}
-	//catch (System::Exception^ ex)
-	//{
-	//	System::Console::WriteLine(ex->Message);	
-	//	isThrowE = !isThrowE;
-	//}
-	//catch (std::exception& ex)
-	//{
-	//	std::cout << ex.what();
-	//	isThrowE = !isThrowE;
-	//}
-	//finally
-	//{
-	//	if (isThrowE)
-	//		std::cout << "\n\nAn error has occurred ... Exiting...\n";
-	//};
+	}
+	catch (System::Exception^ ex)
+	{
+		System::Console::WriteLine(ex->Message);	
+		isThrowE = !isThrowE;
+	}
+	catch (std::exception& ex)
+	{
+		std::cout << ex.what();
+		isThrowE = !isThrowE;
+	}
+	finally
+	{
+		if (isThrowE)
+			std::cout << "\n\nAn error has occurred ... Exiting...\n";
+	};
 
 	std::cin.get();
 	return 0;
 };
 #pragma unmanaged
+#pragma warning(pop)

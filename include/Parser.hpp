@@ -123,7 +123,7 @@ namespace __InvokingCLR
 				return dict;
 			};
 		};
-		property System::String^ CurrentOperaion
+		property System::String^ CurrentOperation
 		{
 			inline System::String^ get(void)
 			{
@@ -140,7 +140,6 @@ namespace __InvokingCLR
 
 		Set^ Run(void);
 	private:
-
 #pragma region Parser_Private_Zone
 
 		SetDictionary sets;
@@ -167,7 +166,7 @@ namespace __InvokingCLR
 	public:
 		inline static void Run(void)
 		{
-			System::Console::Write("\n\t\t=== Set calculator ===\n\n\tu - union\n\tn - intersection\n\t+ - complement\n\t\\ - substraction\n\t| - addition\n\nEnter expr: ");
+			System::Console::Write("\n\t\t=== Set calculator ===\n\n\tu - union\n\tn - intersection\n\t+ - symmetric difference\n\t\\ - substraction\n\t| - complement\n\nEnter expr: ");
 
 			System::String^ input = System::Console::ReadLine();
 			System::Console::Write("\n");

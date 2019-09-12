@@ -1,6 +1,11 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
+#pragma warning(push)
+#pragma warning(disable:4677)
+#pragma warning(disable:4267)
+#pragma warning(disable:4506)
+
 #include "./../include/Converter.hpp"
 
 #pragma managed
@@ -36,3 +41,4 @@ inline SetOperand		__InvokingCLR::Converter::__make_set_from_list(SetOperand lis
 };
 
 #pragma unmanaged
+#pragma warning(pop)

@@ -1,6 +1,11 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
+#pragma warning(push)
+#pragma warning(disable:4677)
+#pragma warning(disable:4267)
+#pragma warning(disable:4506)
+
 #include "./../include/Parser.hpp"
 
 #pragma managed
@@ -14,7 +19,7 @@ __InvokingCLR::Parser::Parser(System::String^ expression) : iterator(std::size_t
 __InvokingCLR::Set^ __InvokingCLR::Parser::Run(void)
 {
 	return this->__evaluate(this->__parse());
-}
+};
 
 std::size_t __InvokingCLR::Parser::__get_priority(System::String^ token)
 {
@@ -24,7 +29,7 @@ std::size_t __InvokingCLR::Parser::__get_priority(System::String^ token)
 };
 System::String^ __InvokingCLR::Parser::__parse_t(void)
 {
-	if (this->expression->Length > this->iterator)
+	if (this->iterator < this->expression->Length)
 	{
 		if (System::Char::IsUpper(this->expression, this->iterator))
 		{
@@ -77,6 +82,9 @@ __InvokingCLR::Parser::Expression^ __InvokingCLR::Parser::__parse_se(void)
 	if (!token)
 		throw gcnew System::Exception("invalid in");
 
+	if (System::Char::IsUpper(token, 0))
+		return gcnew Expression(token);
+
 	if (token == "(")
 	{
 		Expression^ result = this->__parse();
@@ -84,9 +92,6 @@ __InvokingCLR::Parser::Expression^ __InvokingCLR::Parser::__parse_se(void)
 			throw gcnew System::Exception("')' expected");
 		return result;
 	};
-
-	if (System::Char::IsUpper(token, 0))
-		return gcnew Expression(token);
 
 	return gcnew Expression(token, this->__parse_se());
 };
@@ -98,18 +103,23 @@ __InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
 	{
 		Set^ set = this->__evaluate(expr->GetArguments()[0]);
 
-		System::Console::WriteLine(this->CurrentOperaion + " " + expr->GetToken() + set->Name);
+		System::Console::Write(this->CurrentOperation + " ");
+		System::Console::ForegroundColor = System::ConsoleColor::Red;
+		System::Console::Write(expr->GetToken());
+		System::Console::ResetColor();
+		System::Console::Write(set->Name + "\n");
+
 		System::Console::Write("A:  " + expr->GetToken() + "{" + cli::safe_cast<System::String^>(set) + "} = ");
 
 		++this->current_operation;
 
 		if (expr->GetToken() == "|")
 		{
-			Set^ uni_set = gcnew Set();
+			Set^ universum = gcnew Set();
 			for each (auto elem in this->sets)
-				uni_set = uni_set->__compute_union(elem.Value);
-			System::Console::Write("{" + cli::safe_cast<System::String^>(set->__compute_addition(uni_set)) + "}\n");
-			return set->__compute_addition(uni_set);
+				universum = universum->__compute_union(elem.Value);
+			System::Console::Write("{" + cli::safe_cast<System::String^>(set->__compute_complement(universum)) + "}\n");
+			return set->__compute_complement(universum);
 		};
 
 		throw gcnew System::Exception("unknow unary operation");
@@ -119,7 +129,11 @@ __InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
 		Set^ set_l = this->__evaluate(expr->GetArguments()[0]);
 		Set^ set_r = this->__evaluate(expr->GetArguments()[1]);
 
-		System::Console::WriteLine(this->CurrentOperaion + " " + set_l->Name + " " + expr->GetToken() + " " + set_r->Name);
+		System::Console::Write(this->CurrentOperation + " " + set_l->Name + " ");
+		System::Console::ForegroundColor = System::ConsoleColor::Red;
+		System::Console::Write(expr->GetToken());
+		System::Console::ResetColor();
+		System::Console::Write(" " + set_r->Name + "\n");
 		System::Console::Write("A:  {" + cli::safe_cast<System::String^>(set_l) + "} " + expr->GetToken() + " {" + cli::safe_cast<System::String^>(set_r) + "} = ");
 
 		++this->current_operation;
@@ -142,7 +156,7 @@ __InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
 		if (expr->GetToken() == "+")
 		{
 			System::Console::Write("{" + cli::safe_cast<System::String^>(set_l->__compute_complement(set_r)) + "}\n");
-			return set_l->__compute_complement(set_r);
+			return set_l->__compute_s_difference(set_r);
 		};			
 
 		throw gcnew System::Exception("unknow binary operation");
@@ -151,3 +165,4 @@ __InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
 };
 
 #pragma unmanaged
+#pragma warning(pop)
