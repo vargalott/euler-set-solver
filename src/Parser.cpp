@@ -23,9 +23,9 @@ __InvokingCLR::Set^ __InvokingCLR::Parser::Run(void)
 
 std::size_t __InvokingCLR::Parser::__get_priority(System::String^ token)
 {
-	if (this->tokens->Contains(token))
+	if ((__InvokingCLR::Converter::__cli_str_to_list(__InvokingCLR::Converter::__std_str_to_cli_str("u n \\ + |")))->Contains(token))
 		return cli::safe_cast<int>(std::size_t(1));
-	return 0;
+	return cli::safe_cast<int>(std::size_t(0));
 };
 System::String^ __InvokingCLR::Parser::__parse_t(void)
 {
@@ -51,11 +51,11 @@ System::String^ __InvokingCLR::Parser::__parse_t(void)
 			};
 		};
 	};
-	return "";
+	return gcnew System::String("");
 };
 __InvokingCLR::Parser::Expression^ __InvokingCLR::Parser::__parse_be(std::size_t min_p)
 {
-	Expression^ expr_l = this->__parse_se();
+	Expression^	expr_l = this->__parse_se();
 
 	for (;;)
 	{
@@ -155,7 +155,7 @@ __InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
 		};
 		if (expr->GetToken() == "+")
 		{
-			System::Console::Write("{" + cli::safe_cast<System::String^>(set_l->__compute_complement(set_r)) + "}\n");
+			System::Console::Write("{" + cli::safe_cast<System::String^>(set_l->__compute_s_difference(set_r)) + "}\n");
 			return set_l->__compute_s_difference(set_r);
 		};			
 
