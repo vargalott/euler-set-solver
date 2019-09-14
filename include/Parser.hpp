@@ -67,26 +67,17 @@ namespace __InvokingCLR
 		ref class Expression
 		{
 		public:
-			inline explicit Expression(System::String^ token) : token(token) {};
-			inline explicit Expression(System::String^ token, Expression^ expr) : token(token)
-			{
-				this->arguments = gcnew System::Collections::Generic::List<Expression^>();
-				this->arguments->Add(expr);
-			};
-			inline explicit Expression(System::String^ token, Expression^ expr_l, Expression^ expr_r) : token(token)
-			{
-				this->arguments = gcnew System::Collections::Generic::List<Expression^>();
-				this->arguments->Add(expr_l);
-				this->arguments->Add(expr_r);
-			};
+			explicit Expression(System::String^ token);
+			explicit Expression(System::String^ token, Expression^ expr);
+			explicit Expression(System::String^ token, Expression^ expr_l, Expression^ expr_r);
 
-			System::Collections::Generic::List<Expression^>^ GetArguments(void)
+			property System::Collections::Generic::List<Expression^>^ Arguments
 			{
-				return this->arguments;
+				System::Collections::Generic::List<Expression^>^ get(void);
 			};
-			System::String^ GetToken(void)
+			property System::String^ Token
 			{
-				return this->token;
+				System::String^ get(void);
 			};
 		private:
 			System::String^ token;
@@ -95,47 +86,19 @@ namespace __InvokingCLR
 		using SetDictionary = System::Collections::Generic::Dictionary<System::String^, Set^>^;
 #pragma endregion
 	public:
-		//inline explicit Parser(void) = default;
 		explicit Parser(System::String^ expression);
 
 		property SetDictionary Sets
 		{
-			inline SetDictionary get(void)
-			{
-				std::size_t iterator = std::size_t(0);
-				SetDictionary dict = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
-
-				while (this->expression->Length > iterator)
-				{
-					if (System::Char::IsUpper(this->expression[iterator]))
-					{
-						System::String^ name = "";
-						while (this->expression->Length > iterator && System::Char::IsUpper(this->expression[iterator]))
-						{
-							name += this->expression[iterator];
-							++iterator;
-						};
-						dict[name] = gcnew Set(SetOperand(), name);
-					}
-					else
-						++iterator;
-				};
-				return dict;
-			};
+			SetDictionary get(void);
 		};
 		property System::String^ CurrentOperation
 		{
-			inline System::String^ get(void)
-			{
-				return this->current_operation + ": ";
-			};
-		};
+			System::String^ get(void);
+		}
 		property SetDictionary SetsMainGetter
 		{
-			inline SetDictionary get(void)
-			{
-				return this->sets;
-			};
+			SetDictionary get(void);
 		};
 
 		Set^ Run(void);
@@ -164,34 +127,7 @@ namespace __InvokingCLR
 	public ref class Parsing
 	{
 	public:
-		inline static void Run(void)
-		{
-			System::Console::Write("\n\t\t=== Set calculator ===\n\n\tu - union\n\tn - intersection\n\t+ - symmetric difference\n\t\\ - substraction\n\t| - complement\n\nEnter expr: ");
-
-			System::String^ input = System::Console::ReadLine();
-			System::Console::Write("\n");
-
-			auto expr = gcnew __InvokingCLR::Parser(input);
-
-			auto dict = gcnew System::Collections::Generic::Dictionary<System::String^, __InvokingCLR::Set^>();
-
-			for each (auto elem in expr->Sets)
-			{
-				System::Console::Write("Enter {0}: ", elem.Key);
-				__InvokingCLR::SetOperand tmp = __InvokingCLR::Converter::__cli_str_to_list(System::Console::ReadLine());
-				dict[elem.Key] = gcnew __InvokingCLR::Set(tmp, elem.Key);
-			};
-			System::Console::Write("\n");
-			for each (auto elem in expr->Sets)
-			{
-				expr->SetsMainGetter->Remove(elem.Key);
-				expr->SetsMainGetter->Add(elem.Key, dict[elem.Key]);
-			};
-
-			auto result = expr->Run();
-
-			System::Console::Write("\nResult: {" + cli::safe_cast<System::String^>(result) + "}");
-		};
+		static void Run(void);
 	};
 };
 

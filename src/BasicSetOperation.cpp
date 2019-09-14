@@ -12,7 +12,7 @@
 
 using SetOperand = __InvokingCLR::SetOperand;
 
-inline SetOperand __InvokingCLR::BasicSetSolving::__union(SetOperand left, SetOperand right)
+SetOperand __InvokingCLR::BasicSetSolving::__union(SetOperand left, SetOperand right)
 {
 	return
 	(
@@ -28,7 +28,7 @@ inline SetOperand __InvokingCLR::BasicSetSolving::__union(SetOperand left, SetOp
 		nullptr
 	);
 };
-inline SetOperand __InvokingCLR::BasicSetSolving::__intersection(SetOperand left, SetOperand right)
+SetOperand __InvokingCLR::BasicSetSolving::__intersection(SetOperand left, SetOperand right)
 {
 	return
 	(
@@ -44,7 +44,7 @@ inline SetOperand __InvokingCLR::BasicSetSolving::__intersection(SetOperand left
 		nullptr
 	);
 };
-inline SetOperand __InvokingCLR::BasicSetSolving::__substraction(SetOperand left, SetOperand right)
+SetOperand __InvokingCLR::BasicSetSolving::__substraction(SetOperand left, SetOperand right)
 {
 	return
 	(
@@ -60,7 +60,7 @@ inline SetOperand __InvokingCLR::BasicSetSolving::__substraction(SetOperand left
 		nullptr
 	);
 };
-inline SetOperand __InvokingCLR::BasicSetSolving::__s_difference(SetOperand left, SetOperand right)
+SetOperand __InvokingCLR::BasicSetSolving::__s_difference(SetOperand left, SetOperand right)
 {
 	auto su1 = BasicSetSolving::__substraction(left, right);
 	auto su2 = BasicSetSolving::__substraction(right, left);

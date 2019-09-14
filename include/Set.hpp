@@ -67,48 +67,39 @@ namespace __InvokingCLR
 
 		property System::String^ Name
 		{
-			System::String^ get(void)
-			{
-				return this->name;
-			};
+			System::String^ get(void);
 		};
 		property SetOperand Set_
 		{
-			inline SetOperand get(void)
-			{
-				return this->set;
-			};
-			inline void set(SetOperand set)
-			{
-				this->set = set;
-			};
+			SetOperand get(void);
+			void set(__InvokingCLR::SetOperand);
 		};
 
 		/*
 		*	Computing sets union
 		*	openard to parse - "u"
 		*/
-		inline Set^ __compute_union(Set^ operand);
+		Set^ __compute_union(Set^ operand);
 		/*
 		*	Computing sets intersection
 		*	openard to parse - "n"
 		*/
-		inline Set^ __compute_intersection(Set^ operand);
+		Set^ __compute_intersection(Set^ operand);
 		/*
 		*	Computing sets complement
 		*	openard to parse - "+"
 		*/
-		inline Set^ __compute_s_difference(Set^ operand);
+		Set^ __compute_s_difference(Set^ operand);
 		/*
 		*	Computing sets substraction
 		*	openard to parse - "\"
 		*/
-		inline Set^ __compute_substraction(Set^ operand);
+		Set^ __compute_substraction(Set^ operand);
 		/*
 		*	Computing sets addition
 		*	openard to parse - "_"
 		*/
-		inline Set^ __compute_complement(Set^ operand);
+		Set^ __compute_complement(Set^ operand);
 
 	private:
 		SetOperand set;

@@ -58,13 +58,13 @@ namespace __InvokingCLR
 	public ref class Converter
 	{
 	public:
-		inline static System::String^ __std_str_to_cli_str(std::string const& convertible);
-		inline static std::string __cli_str_to_std_str(System::String^ convertible);
+		static System::String^ __std_str_to_cli_str(std::string const& convertible);
+		static std::string __cli_str_to_std_str(System::String^ convertible);
 
-		inline static SetOperand __cli_str_to_list(System::String^ convertible);
-		inline static System::String^ __list_to_cli_str(SetOperand convertible);
+		static SetOperand __cli_str_to_list(System::String^ convertible);
+		static System::String^ __list_to_cli_str(SetOperand convertible);
 
-		inline static SetOperand __make_set_from_list(SetOperand list);
+		static SetOperand __make_set_from_list(SetOperand list);
 	};
 };
 #pragma unmanaged

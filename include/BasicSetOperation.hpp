@@ -62,10 +62,10 @@ namespace __InvokingCLR
 	public ref class BasicSetSolving
 	{
 	public:
-		inline static SetOperand __union(SetOperand left, SetOperand right);
-		inline static SetOperand __intersection(SetOperand left, SetOperand right);
-		inline static SetOperand __substraction(SetOperand left, SetOperand right);
-		inline static SetOperand __s_difference(SetOperand left, SetOperand right);
+		static SetOperand __union(SetOperand left, SetOperand right);
+		static SetOperand __intersection(SetOperand left, SetOperand right);
+		static SetOperand __substraction(SetOperand left, SetOperand right);
+		static SetOperand __s_difference(SetOperand left, SetOperand right);
 	};
 	
 	/*

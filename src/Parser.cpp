@@ -10,20 +10,83 @@
 
 #pragma managed
 
-__InvokingCLR::Parser::Parser(System::String^ expression) : iterator(std::size_t(0)), current_operation(cli::safe_cast<int>(std::size_t(1)))
+#pragma region Expression
+
+__InvokingCLR::Parser::Expression::Expression(System::String^ token) : token(token) {};
+__InvokingCLR::Parser::Expression::Expression(System::String^ token, Expression^ expr) : token(token)
+{
+	this->arguments = gcnew System::Collections::Generic::List<Expression^>();
+	this->arguments->Add(expr);
+};
+__InvokingCLR::Parser::Expression::Expression(System::String^ token, Expression^ expr_l, Expression^ expr_r) : token(token)
+{
+	this->arguments = gcnew System::Collections::Generic::List<Expression^>();
+	this->arguments->Add(expr_l);
+	this->arguments->Add(expr_r);
+};
+
+System::Collections::Generic::List<__InvokingCLR::Parser::Expression^>^ __InvokingCLR::Parser::Expression::Arguments::get(void)
+{
+	return this->arguments;
+};
+System::String^ __InvokingCLR::Parser::Expression::Token::get(void)
+{
+	return this->token;
+};
+
+#pragma endregion
+
+#pragma region Parser
+
+__InvokingCLR::Parser::Parser(System::String^ expression) 
+	: iterator(cli::safe_cast<int>(std::size_t(0))), 
+	  current_operation(cli::safe_cast<int>(std::size_t(1)))
 {
 	this->expression = expression->Replace(" ", "");
-	this->tokens = __InvokingCLR::Converter::__cli_str_to_list(__InvokingCLR::Converter::__std_str_to_cli_str("( ) u n \\ + |"));
+	this->tokens = Converter::__cli_str_to_list("( ) u n \\ + |");
 	this->sets = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
+};
+
+__InvokingCLR::Parser::SetDictionary __InvokingCLR::Parser::Sets::get(void)
+{
+	std::size_t _iterator = std::size_t(0);
+	SetDictionary dict = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
+
+	while (this->expression->Length > _iterator)
+	{
+		if (System::Char::IsUpper(this->expression[_iterator]))
+		{
+			System::String^ name = "";
+			while (this->expression->Length > _iterator && System::Char::IsUpper(this->expression[_iterator]))
+			{
+				name += this->expression[_iterator];
+				++_iterator;
+			};
+			dict[name] = gcnew Set(SetOperand(), name);
+		}
+		else
+			++_iterator;
+	};
+	return dict;
+};
+System::String^ __InvokingCLR::Parser::CurrentOperation::get(void)
+{
+	return this->current_operation + ": ";
+};
+__InvokingCLR::Parser::SetDictionary __InvokingCLR::Parser::SetsMainGetter::get(void)
+{
+	return this->sets;
 };
 __InvokingCLR::Set^ __InvokingCLR::Parser::Run(void)
 {
 	return this->__evaluate(this->__parse());
 };
 
+#pragma region ParserPrivateMethods
+
 std::size_t __InvokingCLR::Parser::__get_priority(System::String^ token)
 {
-	if ((__InvokingCLR::Converter::__cli_str_to_list(__InvokingCLR::Converter::__std_str_to_cli_str("u n \\ + |")))->Contains(token))
+	if ((Converter::__cli_str_to_list("u n \\ + |"))->Contains(token))
 		return cli::safe_cast<int>(std::size_t(1));
 	return cli::safe_cast<int>(std::size_t(0));
 };
@@ -80,7 +143,7 @@ __InvokingCLR::Parser::Expression^ __InvokingCLR::Parser::__parse_se(void)
 {
 	System::String^ token = this->__parse_t();
 	if (!token)
-		throw gcnew System::Exception("invalid in");
+		throw gcnew System::Exception("invalid input");
 
 	if (System::Char::IsUpper(token, 0))
 		return gcnew Expression(token);
@@ -97,23 +160,23 @@ __InvokingCLR::Parser::Expression^ __InvokingCLR::Parser::__parse_se(void)
 };
 __InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
 {
-	if (expr->GetArguments() == nullptr)
-		return this->sets[expr->GetToken()];
-	if (expr->GetArguments()->Count == 1)
+	if (expr->Arguments == nullptr)
+		return this->sets[expr->Token];
+	if (expr->Arguments->Count == 1)
 	{
-		Set^ set = this->__evaluate(expr->GetArguments()[0]);
+		Set^ set = this->__evaluate(expr->Arguments[0]);
 
 		System::Console::Write(this->CurrentOperation + " ");
 		System::Console::ForegroundColor = System::ConsoleColor::Red;
-		System::Console::Write(expr->GetToken());
+		System::Console::Write(expr->Token);
 		System::Console::ResetColor();
 		System::Console::Write(set->Name + "\n");
 
-		System::Console::Write("A:  " + expr->GetToken() + "{" + cli::safe_cast<System::String^>(set) + "} = ");
+		System::Console::Write("A:  " + expr->Token + "{" + cli::safe_cast<System::String^>(set) + "} = ");
 
 		++this->current_operation;
 
-		if (expr->GetToken() == "|")
+		if (expr->Token == "|")
 		{
 			Set^ universum = gcnew Set();
 			for each (auto elem in this->sets)
@@ -124,36 +187,36 @@ __InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
 
 		throw gcnew System::Exception("unknow unary operation");
 	};
-	if (expr->GetArguments()->Count == 2)
+	if (expr->Arguments->Count == 2)
 	{
-		Set^ set_l = this->__evaluate(expr->GetArguments()[0]);
-		Set^ set_r = this->__evaluate(expr->GetArguments()[1]);
+		Set^ set_l = this->__evaluate(expr->Arguments[0]);
+		Set^ set_r = this->__evaluate(expr->Arguments[1]);
 
 		System::Console::Write(this->CurrentOperation + " " + set_l->Name + " ");
 		System::Console::ForegroundColor = System::ConsoleColor::Red;
-		System::Console::Write(expr->GetToken());
+		System::Console::Write(expr->Token);
 		System::Console::ResetColor();
 		System::Console::Write(" " + set_r->Name + "\n");
-		System::Console::Write("A:  {" + cli::safe_cast<System::String^>(set_l) + "} " + expr->GetToken() + " {" + cli::safe_cast<System::String^>(set_r) + "} = ");
+		System::Console::Write("A:  {" + cli::safe_cast<System::String^>(set_l) + "} " + expr->Token + " {" + cli::safe_cast<System::String^>(set_r) + "} = ");
 
 		++this->current_operation;
 
-		if (expr->GetToken() == "u")
+		if (expr->Token == "u")
 		{
 			System::Console::Write("{" + cli::safe_cast<System::String^>(set_l->__compute_union(set_r)) + "}\n");
 			return set_l->__compute_union(set_r);
 		};
-		if (expr->GetToken() == "n")
+		if (expr->Token == "n")
 		{
 			System::Console::Write("{" + cli::safe_cast<System::String^>(set_l->__compute_intersection(set_r)) + "}\n");
 			return set_l->__compute_intersection(set_r);
 		};			
-		if (expr->GetToken() == "\\")
+		if (expr->Token == "\\")
 		{
 			System::Console::Write("{" + cli::safe_cast<System::String^>(set_l->__compute_substraction(set_r)) + "}\n");
 			return set_l->__compute_substraction(set_r);
 		};
-		if (expr->GetToken() == "+")
+		if (expr->Token == "+")
 		{
 			System::Console::Write("{" + cli::safe_cast<System::String^>(set_l->__compute_s_difference(set_r)) + "}\n");
 			return set_l->__compute_s_difference(set_r);
@@ -162,6 +225,44 @@ __InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
 		throw gcnew System::Exception("unknow binary operation");
 	};
 	throw gcnew System::Exception("unknow operation");
+};
+
+#pragma endregion
+
+#pragma endregion
+
+void __InvokingCLR::Parsing::Run(void)
+{
+	System::Console::Write("\n\t\t=== Set calculator ===\n\n\tu - union\n\tn - intersection\n\t+ - symmetric difference\n\t\\ - substraction" +
+		"\n\t| - complement\n\n\tYou should using uppercase letters to set sets!\n\nEnter expr: ");
+
+	System::String^ input = System::Console::ReadLine();
+	System::Console::Write("\n");
+
+	System::String^ compare = input->ToLower();
+	if (compare == input)
+		throw gcnew System::Exception("invalid input");
+
+	auto expr = gcnew __InvokingCLR::Parser(input);
+
+	auto dict = gcnew System::Collections::Generic::Dictionary<System::String^, __InvokingCLR::Set^>();
+
+	for each (auto elem in expr->Sets)
+	{
+		System::Console::Write("Enter {0}: ", elem.Key);
+		SetOperand tmp = Converter::__cli_str_to_list(System::Console::ReadLine());
+		dict[elem.Key] = gcnew Set(tmp, elem.Key);
+	};
+	System::Console::Write("\n");
+	for each (auto elem in expr->Sets)
+	{
+		expr->SetsMainGetter->Remove(elem.Key);
+		expr->SetsMainGetter->Add(elem.Key, dict[elem.Key]);
+	};
+
+	auto result = expr->Run();
+
+	System::Console::Write("\nResult: {" + cli::safe_cast<System::String^>(result) + "}");
 };
 
 #pragma unmanaged
