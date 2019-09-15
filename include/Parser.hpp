@@ -38,8 +38,9 @@
 #using <System.Core.dll>
 
 #include "./../include/BasicSetOperation.hpp"
-#include "./..//include/Set.hpp"
 #include "./..//include/Converter.hpp"
+#include "./..//include/Set.hpp"
+#include "./..//include/Expression.hpp"
 
 #pragma unmanaged
 #pragma endregion
@@ -50,41 +51,14 @@ namespace __InvokingCLR
 	ref class Set;
 
 	using SetOperand = System::Collections::Generic::List<System::String^>^;
+	using SetDictionary = System::Collections::Generic::Dictionary<System::String^, Set^>^;
 
 	/*
 	*	Implements main class which
 	*	parse the expression to evaluating
 	*/
-	public ref class Parser
+	private ref class Parser
 	{
-	private:
-#pragma region Addition_Classes
-
-		/*
-		*	Class which represents the
-		*	expression entity
-		*/
-		ref class Expression
-		{
-		public:
-			explicit Expression(System::String^ token);
-			explicit Expression(System::String^ token, Expression^ expr);
-			explicit Expression(System::String^ token, Expression^ expr_l, Expression^ expr_r);
-
-			property System::Collections::Generic::List<Expression^>^ Arguments
-			{
-				System::Collections::Generic::List<Expression^>^ get(void);
-			};
-			property System::String^ Token
-			{
-				System::String^ get(void);
-			};
-		private:
-			System::String^ token;
-			System::Collections::Generic::List<Expression^>^ arguments;
-		};
-		using SetDictionary = System::Collections::Generic::Dictionary<System::String^, Set^>^;
-#pragma endregion
 	public:
 		explicit Parser(System::String^ expression);
 
@@ -103,8 +77,6 @@ namespace __InvokingCLR
 
 		Set^ Run(void);
 	private:
-#pragma region Parser_Private_Zone
-
 		SetDictionary sets;
 		System::String^ expression;
 		SetOperand tokens;
@@ -117,8 +89,6 @@ namespace __InvokingCLR
 		Expression^			__parse(void);
 		Expression^			__parse_se(void);
 		Set^				__evaluate(Expression^ expr);
-
-#pragma endregion
 	};
 
 	/*

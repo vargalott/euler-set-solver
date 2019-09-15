@@ -32,10 +32,6 @@
 *	Global includes, cli dll exports
 */
 #pragma region GIE
-#pragma unmanaged
-
-	#include <iostream>
-
 #pragma managed
 
 	#using <System.dll>
@@ -59,7 +55,7 @@ namespace __InvokingCLR
 	*	- complement
 	*	Methods take a two Lists which contains Strings and returning String
 	*/
-	public ref class BasicSetSolving
+	private ref class BasicSetSolving
 	{
 	public:
 		static SetOperand __union(SetOperand left, SetOperand right);
@@ -75,6 +71,7 @@ namespace __InvokingCLR
 	*	Should use __InvokingCLR_Basic_Solve with one of four
 	*	types of operations
 	*/
+#ifdef __InvokingCLR_Macro
 	#pragma region __InvokingCLR_Preprocessor_definitions
 
 	#define __InvokingCLR_Basic__UNION			__InvokingCLR::BasicSetSolving::__union
@@ -112,6 +109,7 @@ namespace __InvokingCLR
 		)
 	#pragma endregion 
 	// __InvokingCLR_Preprocessor_definitions
+#endif // __InvokingCLR_Macro
 };
 #pragma unmanaged
 

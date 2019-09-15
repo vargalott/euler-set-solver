@@ -25,8 +25,8 @@
 */
 
 #pragma once
-#ifndef __SET_CLI_HPP__
-#define __SET_CLI_HPP__
+#ifndef __EXPRESSION_CLI_HPP__
+#define __EXPRESSION_CLI_HPP__
 
 /*
 *	Global includes, cli dll exports
@@ -37,75 +37,36 @@
 #using <System.dll>
 #using <System.Core.dll>
 
-#include "./../include/BasicSetOperation.hpp"
-#include "./..//include/Converter.hpp"
-
 #pragma unmanaged
 #pragma endregion
 
 #pragma managed
-
-#pragma managed
 namespace __InvokingCLR
 {
-	using SetOperand = System::Collections::Generic::List<System::String^>^;
-
 	/*
-	*	Class implements the representation of
-	*	Set operand with needed operation
+	*	Class which represents the
+	*	expression entity
 	*/
-	private ref class Set
+	private ref class Expression
 	{
 	public:
-		explicit Set(void);
-		explicit Set(SetOperand set, System::String^ name);
+		explicit Expression(System::String^ token);
+		explicit Expression(System::String^ token, Expression^ expr);
+		explicit Expression(System::String^ token, Expression^ expr_l, Expression^ expr_r);
 
-		/*
-		*	casting operator to System::String^
-		*/
-		explicit operator System::String^(void);
-
-		property System::String^ Name
+		property System::Collections::Generic::List<Expression^>^ Arguments
+		{
+			System::Collections::Generic::List<Expression^>^ get(void);
+		};
+		property System::String^ Token
 		{
 			System::String^ get(void);
 		};
-		property SetOperand Set_
-		{
-			SetOperand get(void);
-			void set(__InvokingCLR::SetOperand);
-		};
-
-		/*
-		*	Computing sets union
-		*	openard to parse - "u"
-		*/
-		Set^ __compute_union(Set^ operand);
-		/*
-		*	Computing sets intersection
-		*	openard to parse - "n"
-		*/
-		Set^ __compute_intersection(Set^ operand);
-		/*
-		*	Computing sets complement
-		*	openard to parse - "+"
-		*/
-		Set^ __compute_s_difference(Set^ operand);
-		/*
-		*	Computing sets substraction
-		*	openard to parse - "\"
-		*/
-		Set^ __compute_substraction(Set^ operand);
-		/*
-		*	Computing sets addition
-		*	openard to parse - "_"
-		*/
-		Set^ __compute_complement(Set^ operand);
-
 	private:
-		SetOperand set;
-		System::String^ name;
+		System::String^ token;
+		System::Collections::Generic::List<Expression^>^ arguments;
 	};
 };
 #pragma unmanaged
 
-#endif // !__SET_CLI_HPP__
+#endif // !__EXPRESSION_CLI_HPP__

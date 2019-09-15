@@ -10,34 +10,6 @@
 
 #pragma managed
 
-#pragma region Expression
-
-__InvokingCLR::Parser::Expression::Expression(System::String^ token) : token(token) {};
-__InvokingCLR::Parser::Expression::Expression(System::String^ token, Expression^ expr) : token(token)
-{
-	this->arguments = gcnew System::Collections::Generic::List<Expression^>();
-	this->arguments->Add(expr);
-};
-__InvokingCLR::Parser::Expression::Expression(System::String^ token, Expression^ expr_l, Expression^ expr_r) : token(token)
-{
-	this->arguments = gcnew System::Collections::Generic::List<Expression^>();
-	this->arguments->Add(expr_l);
-	this->arguments->Add(expr_r);
-};
-
-System::Collections::Generic::List<__InvokingCLR::Parser::Expression^>^ __InvokingCLR::Parser::Expression::Arguments::get(void)
-{
-	return this->arguments;
-};
-System::String^ __InvokingCLR::Parser::Expression::Token::get(void)
-{
-	return this->token;
-};
-
-#pragma endregion
-
-#pragma region Parser
-
 __InvokingCLR::Parser::Parser(System::String^ expression) 
 	: iterator(cli::safe_cast<int>(std::size_t(0))), 
 	  current_operation(cli::safe_cast<int>(std::size_t(1)))
@@ -47,7 +19,7 @@ __InvokingCLR::Parser::Parser(System::String^ expression)
 	this->sets = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
 };
 
-__InvokingCLR::Parser::SetDictionary __InvokingCLR::Parser::Sets::get(void)
+__InvokingCLR::SetDictionary	__InvokingCLR::Parser::Sets::get(void)
 {
 	std::size_t _iterator = std::size_t(0);
 	SetDictionary dict = gcnew System::Collections::Generic::Dictionary<System::String^, Set^>();
@@ -69,28 +41,26 @@ __InvokingCLR::Parser::SetDictionary __InvokingCLR::Parser::Sets::get(void)
 	};
 	return dict;
 };
-System::String^ __InvokingCLR::Parser::CurrentOperation::get(void)
+System::String^					__InvokingCLR::Parser::CurrentOperation::get(void)
 {
 	return this->current_operation + ": ";
 };
-__InvokingCLR::Parser::SetDictionary __InvokingCLR::Parser::SetsMainGetter::get(void)
+__InvokingCLR::SetDictionary	__InvokingCLR::Parser::SetsMainGetter::get(void)
 {
 	return this->sets;
 };
-__InvokingCLR::Set^ __InvokingCLR::Parser::Run(void)
+__InvokingCLR::Set^				__InvokingCLR::Parser::Run(void)
 {
 	return this->__evaluate(this->__parse());
 };
 
-#pragma region ParserPrivateMethods
-
-std::size_t __InvokingCLR::Parser::__get_priority(System::String^ token)
+std::size_t					__InvokingCLR::Parser::__get_priority(System::String^ token)
 {
 	if ((Converter::__cli_str_to_list("u n \\ + |"))->Contains(token))
 		return cli::safe_cast<int>(std::size_t(1));
 	return cli::safe_cast<int>(std::size_t(0));
 };
-System::String^ __InvokingCLR::Parser::__parse_t(void)
+System::String^				__InvokingCLR::Parser::__parse_t(void)
 {
 	if (this->iterator < this->expression->Length)
 	{
@@ -116,7 +86,7 @@ System::String^ __InvokingCLR::Parser::__parse_t(void)
 	};
 	return gcnew System::String("");
 };
-__InvokingCLR::Parser::Expression^ __InvokingCLR::Parser::__parse_be(std::size_t min_p)
+__InvokingCLR::Expression^	__InvokingCLR::Parser::__parse_be(std::size_t min_p)
 {
 	Expression^	expr_l = this->__parse_se();
 
@@ -135,11 +105,11 @@ __InvokingCLR::Parser::Expression^ __InvokingCLR::Parser::__parse_be(std::size_t
 		expr_l = gcnew Expression(operand, expr_l, expr_r);
 	};
 };
-__InvokingCLR::Parser::Expression^ __InvokingCLR::Parser::__parse(void)
+__InvokingCLR::Expression^	__InvokingCLR::Parser::__parse(void)
 {
 	return this->__parse_be(0);
 };
-__InvokingCLR::Parser::Expression^ __InvokingCLR::Parser::__parse_se(void)
+__InvokingCLR::Expression^	__InvokingCLR::Parser::__parse_se(void)
 {
 	System::String^ token = this->__parse_t();
 	if (!token)
@@ -158,7 +128,7 @@ __InvokingCLR::Parser::Expression^ __InvokingCLR::Parser::__parse_se(void)
 
 	return gcnew Expression(token, this->__parse_se());
 };
-__InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
+__InvokingCLR::Set^			__InvokingCLR::Parser::__evaluate(Expression^ expr)
 {
 	if (expr->Arguments == nullptr)
 		return this->sets[expr->Token];
@@ -227,9 +197,6 @@ __InvokingCLR::Set^ __InvokingCLR::Parser::__evaluate(Expression^ expr)
 	throw gcnew System::Exception("unknow operation");
 };
 
-#pragma endregion
-
-#pragma endregion
 
 void __InvokingCLR::Parsing::Run(void)
 {
@@ -242,6 +209,8 @@ void __InvokingCLR::Parsing::Run(void)
 	System::String^ compare = input->ToLower();
 	if (compare == input)
 		throw gcnew System::Exception("invalid input");
+
+	// send request to wolframm here
 
 	auto expr = gcnew __InvokingCLR::Parser(input);
 

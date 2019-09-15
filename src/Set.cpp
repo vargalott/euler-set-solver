@@ -21,7 +21,7 @@ __InvokingCLR::Set::Set(SetOperand set, System::String^ name) : name(name)
 			this->set->Add(elem);
 };
 
-__InvokingCLR::Set::operator System::String^ (void)
+__InvokingCLR::Set::operator System::String^(void)
 {
 	if (this->set)
 		return Converter::__list_to_cli_str(this->set);

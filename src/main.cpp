@@ -32,6 +32,7 @@
 #pragma warning(disable:4506)
 
 #pragma unmanaged
+#include <iostream>
 #include <stdexcept>
 #pragma managed
 #include "./../include/Parser.hpp"
@@ -50,7 +51,7 @@ int __cdecl main(void)
 	}
 	catch (System::Exception^ ex)
 	{
-		System::Console::WriteLine(ex->Message);	
+		System::Console::WriteLine(ex->Message);
 		isThrowE = !isThrowE;
 	}
 	catch (std::exception& ex)
@@ -61,9 +62,8 @@ int __cdecl main(void)
 	finally
 	{
 		if (isThrowE)
-			std::cout << "\n\nAn error has occurred ... Exiting...\n";
+			std::cout << "\n\nAn error has occurred... Press any key to exit...\n";
 	};
-
 	std::cin.get();
 	return 0;
 };
