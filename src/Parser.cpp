@@ -210,7 +210,8 @@ void __InvokingCLR::Parsing::Run(void)
 	if (compare == input)
 		throw gcnew System::Exception("invalid input");
 
-	// send request to wolframm here
+	UseWolframAPI w_api;
+	w_api.SendRequest(input);
 
 	auto expr = gcnew __InvokingCLR::Parser(input);
 
@@ -231,7 +232,9 @@ void __InvokingCLR::Parsing::Run(void)
 
 	auto result = expr->Run();
 
-	System::Console::Write("\nResult: {" + cli::safe_cast<System::String^>(result) + "}");
+	System::Console::Write("\nResult: {" + cli::safe_cast<System::String^>(result) + "}\n\n");
+
+	w_api.PrintAscii(w_api.GetVennUrl());
 };
 
 #pragma unmanaged
