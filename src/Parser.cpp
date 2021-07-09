@@ -1,17 +1,14 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-
 #pragma warning(push)
 #pragma warning(disable:4677)
 #pragma warning(disable:4267)
 #pragma warning(disable:4506)
 
-#include "./../include/Parser.hpp"
+#include <euler-set-solver/parser.hpp>
 
 #pragma managed
 
-__InvokingCLR::Parser::Parser(System::String^ expression) 
-	: iterator(cli::safe_cast<int>(std::size_t(0))), 
+__InvokingCLR::Parser::Parser(System::String^ expression)
+	: iterator(cli::safe_cast<int>(std::size_t(0))),
 	  current_operation(cli::safe_cast<int>(std::size_t(1)))
 {
 	this->expression = expression->Replace(" ", "");
@@ -180,7 +177,7 @@ __InvokingCLR::Set^			__InvokingCLR::Parser::__evaluate(Expression^ expr)
 		{
 			System::Console::Write("{" + cli::safe_cast<System::String^>(set_l->__compute_intersection(set_r)) + "}\n");
 			return set_l->__compute_intersection(set_r);
-		};			
+		};
 		if (expr->Token == "\\")
 		{
 			System::Console::Write("{" + cli::safe_cast<System::String^>(set_l->__compute_substraction(set_r)) + "}\n");
@@ -190,7 +187,7 @@ __InvokingCLR::Set^			__InvokingCLR::Parser::__evaluate(Expression^ expr)
 		{
 			System::Console::Write("{" + cli::safe_cast<System::String^>(set_l->__compute_s_difference(set_r)) + "}\n");
 			return set_l->__compute_s_difference(set_r);
-		};			
+		};
 
 		throw gcnew System::Exception("unknow binary operation");
 	};
