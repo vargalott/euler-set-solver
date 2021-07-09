@@ -7,7 +7,9 @@
 #include <iostream>
 #include <stdexcept>
 #pragma managed
+
 #include <euler-set-solver/parser.hpp>
+
 #pragma unmanaged
 
 /*

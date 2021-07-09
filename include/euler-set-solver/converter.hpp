@@ -8,15 +8,12 @@
 #pragma region GIE
 #pragma unmanaged
 
-	#include <string>
+#include <string>
 
 #pragma managed
 
-	#using <System.dll>
-	#using <System.Core.dll>
-
-	#include <vcclr.h>
-	#include <msclr\marshal_cppstd.h>
+#include <vcclr.h>
+#include <msclr\marshal_cppstd.h>
 
 #pragma unmanaged
 #pragma endregion

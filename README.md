@@ -1,1 +1,1 @@
-# SetSolverPlusEuler
+# euler-set-solver

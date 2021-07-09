@@ -8,9 +8,6 @@
 #pragma region GIE
 #pragma managed
 
-#using <System.dll>
-#using <System.Core.dll>
-
 #pragma unmanaged
 #pragma endregion
 

@@ -8,10 +8,7 @@
 #pragma region GIE
 #pragma managed
 
-	#using <System.dll>
-	#using <System.Core.dll>
-
-  #include <euler-set-solver/converter.hpp>
+#include <euler-set-solver/converter.hpp>
 
 #pragma unmanaged
 #pragma endregion
