@@ -7,33 +7,28 @@
 
 #pragma managed
 
-using SetOperand = __InvokingCLR::SetOperand;
-
-System::String ^ __InvokingCLR::Converter::__std_str_to_cli_str(
-                     std::string const &convertible) {
-  return gcnew System::String(convertible.c_str());
-  // TODO: UTF-8 fix
-}
-std::string __InvokingCLR::Converter::__cli_str_to_std_str(System::String ^
-                                                           convertible) {
-  return msclr::interop::marshal_as<std::string>(convertible);
+// TODO: UTF-8 fix
+System::String^ ess::clr::converter::std_str_to_cli_str(std::string const& str) {
+  return gcnew System::String(str.c_str());
 };
-SetOperand __InvokingCLR::Converter::__cli_str_to_list(System::String ^
-                                                       convertible) {
-  SetOperand list =
-      gcnew System::Collections::Generic::List<System::String ^>();
-  for each (auto elem in convertible->Split(' '))
+std::string ess::clr::converter::cli_str_to_std_str(System::String^ str) {
+  return msclr::interop::marshal_as<std::string>(str);
+};
+ess::clr::set_operand ess::clr::converter::cli_str_to_list(System::String^ str) {
+  ess::clr::set_operand list = gcnew System::Collections::Generic::List<System::String^>();
+  for each (auto elem in str->Split(' ')) {
     list->Add(elem);
+  }
   return list;
-}
-System::String ^
-    __InvokingCLR::Converter::__list_to_cli_str(SetOperand convertible) {
-  return System::String::Join(" ", convertible);
 };
-SetOperand __InvokingCLR::Converter::__make_set_from_list(SetOperand list) {
-  SetOperand set = gcnew System::Collections::Generic::List<System::String ^>();
-  for each (auto elem in System::Linq::Enumerable::Distinct(list))
+System::String^ ess::clr::converter::list_to_cli_str(ess::clr::set_operand set_operand) {
+  return System::String::Join(" ", set_operand);
+};
+ess::clr::set_operand ess::clr::converter::make_set_from_list(ess::clr::set_operand list) {
+  ess::clr::set_operand set = gcnew System::Collections::Generic::List<System::String^>();
+  for each (auto elem in System::Linq::Enumerable::Distinct(list)) {
     set->Add(elem);
+  }
   return set;
 };
 

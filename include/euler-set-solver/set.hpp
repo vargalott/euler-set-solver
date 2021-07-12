@@ -16,61 +16,60 @@
 
 #pragma managed
 
-#pragma managed
-namespace __InvokingCLR {
-using SetOperand = System::Collections::Generic::List<System::String ^> ^ ;
-
-/*
- *	Class implements the representation of
- *	Set operand with needed operation
- */
-private ref class Set {
-public:
-  explicit Set(void);
-  explicit Set(SetOperand set, System::String ^ name);
+namespace ess::clr {
+  using set_operand = System::Collections::Generic::List<System::String^>^;
 
   /*
-   *	casting operator to System::String^
+   *	Class implements the representation of
+   *	Set operand with needed operation
    */
-  explicit operator System::String ^(void);
+  private ref class set_inner {
+  public:
+    explicit set_inner(void);
+    explicit set_inner(ess::clr::set_operand set, System::String^ name);
 
-  property System::String ^ Name { System::String ^ get(void); };
-  property SetOperand Set_ {
-    SetOperand get(void);
-    void set(__InvokingCLR::SetOperand);
+    explicit operator System::String^ (void);
+
+    property System::String^ name {
+      System::String^ get(void);
+    };
+    property ess::clr::set_operand set_instance {
+      ess::clr::set_operand get(void);
+      void set(ess::clr::set_operand _set_instance);
+    };
+
+    /*
+     *	Computing sets union
+     *	openard to parse - "u"
+     */
+    ess::clr::set_inner^ uni0n(ess::clr::set_inner^ operand);
+    /*
+     *	Computing sets intersection
+     *	openard to parse - "n"
+     */
+    ess::clr::set_inner^ intersect(ess::clr::set_inner^ operand);
+    /*
+     *	Computing sets complement
+     *	openard to parse - "+"
+     */
+    ess::clr::set_inner^ sdiff(ess::clr::set_inner^ operand);
+    /*
+     *	Computing sets substraction
+     *	openard to parse - "\"
+     */
+    ess::clr::set_inner^ substract(ess::clr::set_inner^ operand);
+    /*
+     *	Computing sets addition
+     *	openard to parse - "_"
+     */
+    ess::clr::set_inner^ complement(ess::clr::set_inner^ operand);
+
+  private:
+    ess::clr::set_operand _set_instance;
+    System::String^ _name;
   };
+}; // namespace ess::clr
 
-  /*
-   *	Computing sets union
-   *	openard to parse - "u"
-   */
-  Set ^ __compute_union(Set ^ operand);
-  /*
-   *	Computing sets intersection
-   *	openard to parse - "n"
-   */
-  Set ^ __compute_intersection(Set ^ operand);
-  /*
-   *	Computing sets complement
-   *	openard to parse - "+"
-   */
-  Set ^ __compute_s_difference(Set ^ operand);
-  /*
-   *	Computing sets substraction
-   *	openard to parse - "\"
-   */
-  Set ^ __compute_substraction(Set ^ operand);
-  /*
-   *	Computing sets addition
-   *	openard to parse - "_"
-   */
-  Set ^ __compute_complement(Set ^ operand);
-
-private:
-  SetOperand set;
-  System::String ^ name;
-};
-}; // namespace __InvokingCLR
 #pragma unmanaged
 
 #endif // !__SET_CLI_HPP__

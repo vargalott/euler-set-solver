@@ -12,60 +12,49 @@
 #include <euler-set-solver/expression.hpp>
 #include <euler-set-solver/set-op.hpp>
 #include <euler-set-solver/set.hpp>
-#include <euler-set-solver/wolfram-wrapper.hpp>
 
 #pragma unmanaged
 #pragma endregion
 
 #pragma managed
-namespace __InvokingCLR {
-ref class Set;
 
-using SetOperand = System::Collections::Generic::List<System::String ^> ^ ;
-using SetDictionary =
-    System::Collections::Generic::Dictionary<System::String ^, Set ^> ^
-    ;
+namespace ess::clr {
+  ref class set;
 
-/*
- *	Implements main class which
- *	parse the expression to evaluating
- */
-private ref class Parser {
-public:
-  explicit Parser(System::String ^ expression);
+  using set_operand = System::Collections::Generic::List<System::String^>^;
+  using set_dict = System::Collections::Generic::Dictionary<System::String^, ess::clr::set_inner^>^;
 
-  property SetDictionary Sets { SetDictionary get(void); };
-  property System::String ^ CurrentOperation {
-    System::String ^ get(void);
-  } property SetDictionary SetsMainGetter {
-    SetDictionary get(void);
+  /*
+   *	Implements main class which
+   *	parse the expression to evaluating
+   */
+  private ref class parser {
+  public:
+    explicit parser(System::String^ expr);
+
+    property ess::clr::set_dict sets { ess::clr::set_dict get(void); };
+    property System::String^ current_operation { System::String^ get(void); };
+
+    ess::clr::set_dict dict(void);
+    ess::clr::set_inner^ resolve(void);
+
+  private:
+    ess::clr::set_dict _sets;
+    System::String^ _expr;
+    ess::clr::set_operand _tokens;
+
+    int _iterator;
+    int _current_operation;
+
+    int _get_priority(System::String^ token);
+    System::String^ _parse_token(void);
+    ess::clr::expression^ _parse_be(int min_p);
+    ess::clr::expression^ _parse(void);
+    ess::clr::expression^ _parse_se(void);
+    ess::clr::set_inner^ _evaluate(ess::clr::expression^ expr);
   };
+}; // namespace ess::clr
 
-  Set ^ Run(void);
-
-private:
-  SetDictionary sets;
-  System::String ^ expression;
-  SetOperand tokens;
-
-  std::size_t iterator;
-  std::size_t current_operation;
-
-  std::size_t __get_priority(System::String ^ token);
-  System::String ^ __parse_t(void);
-  Expression ^ __parse_be(std::size_t min_p);
-  Expression ^ __parse(void);
-  Expression ^ __parse_se(void);
-  Set ^ __evaluate(Expression ^ expr);
-};
-
-/*
- *	Main control class
- */
-public ref class Parsing {
-public:
-  static void Run(void);
-};
-}; // namespace __InvokingCLR
+#pragma unmanaged
 
 #endif // !__PARSER_CLI_HPP__

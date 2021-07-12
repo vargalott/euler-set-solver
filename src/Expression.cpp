@@ -7,26 +7,21 @@
 
 #pragma managed
 
-__InvokingCLR::Expression::Expression(System::String ^ token) : token(token){};
-__InvokingCLR::Expression::Expression(System::String ^ token, Expression ^ expr)
-    : token(token) {
-  this->arguments = gcnew System::Collections::Generic::List<Expression ^>();
-  this->arguments->Add(expr);
+ess::clr::expression::expression(System::String^ token) : _token(token) {};
+ess::clr::expression::expression(System::String^ token, ess::clr::expression^ expr) : _token(token) {
+  this->_args = gcnew System::Collections::Generic::List<ess::clr::expression^>();
+  this->_args->Add(expr);
 };
-__InvokingCLR::Expression::Expression(System::String ^ token,
-                                      Expression ^ expr_l, Expression ^ expr_r)
-    : token(token) {
-  this->arguments = gcnew System::Collections::Generic::List<Expression ^>();
-  this->arguments->Add(expr_l);
-  this->arguments->Add(expr_r);
+ess::clr::expression::expression(System::String^ token, ess::clr::expression^ lhs, ess::clr::expression^ rhs) : _token(token) {
+  this->_args = gcnew System::Collections::Generic::List<ess::clr::expression^>();
+  this->_args->Add(lhs);
+  this->_args->Add(rhs);
 };
-
-System::Collections::Generic::List<__InvokingCLR::Expression ^> ^
-    __InvokingCLR::Expression::Arguments::get(void) {
-  return this->arguments;
+System::Collections::Generic::List<ess::clr::expression^>^ ess::clr::expression::args::get(void) {
+  return this->_args;
 };
-System::String ^ __InvokingCLR::Expression::Token::get(void) {
-  return this->token;
+System::String^ ess::clr::expression::token::get(void) {
+  return this->_token;
 };
 
 #pragma unmanaged

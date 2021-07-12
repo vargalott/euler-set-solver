@@ -1,4 +1,4 @@
-﻿#pragma warning(push)
+#pragma warning(push)
 #pragma warning(disable : 4677)
 #pragma warning(disable : 4267)
 #pragma warning(disable : 4506)
@@ -7,74 +7,75 @@
 
 #pragma managed
 
-__InvokingCLR::Set::Set(void) : set(nullptr), name(""){};
-__InvokingCLR::Set::Set(SetOperand set, System::String ^ name) : name(name) {
-  if (set == nullptr)
+ess::clr::set_inner::set_inner(void) : _set_instance(nullptr), _name("") {};
+ess::clr::set_inner::set_inner(ess::clr::set_operand set, System::String^ name) : _name(name) {
+  if (set == nullptr) {
     return;
-  this->set = gcnew System::Collections::Generic::List<System::String ^>();
-  for each (auto elem in set)
-    if (elem)
-      this->set->Add(elem);
-};
+  }
 
-__InvokingCLR::Set::operator System::String ^(void) {
-  if (this->set)
-    return Converter::__list_to_cli_str(this->set);
-  else
+  this->_set_instance = gcnew System::Collections::Generic::List<System::String^>();
+  for each (auto elem in set) {
+    if (elem) {
+      this->_set_instance->Add(elem);
+    }
+  }
+};
+ess::clr::set_inner::operator System::String^ (void) {
+  if (this->_set_instance) {
+    return ess::clr::converter::list_to_cli_str(this->_set_instance);
+  } else {
     return "{}";
+  }
 };
-
-System::String ^ __InvokingCLR::Set::Name::get(void) { return this->name; };
-__InvokingCLR::SetOperand __InvokingCLR::Set::Set_::get(void) {
-  return this->set;
+System::String^ ess::clr::set_inner::name::get(void) {
+  return this->_name;
 };
-void __InvokingCLR::Set::Set_::set(__InvokingCLR::SetOperand set) {
-  this->set = set;
+ess::clr::set_operand ess::clr::set_inner::set_instance::get(void) {
+  return this->_set_instance;
 };
-
-__InvokingCLR::Set ^ __InvokingCLR::Set::__compute_union(Set ^ operand) {
-  Set ^ result = gcnew Set();
-  result->name = this->name + "u" + operand->name;
-  this->set != nullptr
-      ? result->set = BasicSetSolving::__union(this->set, operand->set)
-      : result->set = BasicSetSolving::__union(operand->set, operand->set);
-  return result;
+void ess::clr::set_inner::set_instance::set(ess::clr::set_operand _set_instance) {
+  this->_set_instance = _set_instance;
 };
-__InvokingCLR::Set ^ __InvokingCLR::Set::__compute_intersection(Set ^ operand) {
-  Set ^ result = gcnew Set();
-  result->name = this->name + "n" + operand->name;
-  this->set != nullptr
-      ? result->set = BasicSetSolving::__intersection(this->set, operand->set)
-      : result->set =
-            BasicSetSolving::__intersection(operand->set, operand->set);
-  return result;
+ess::clr::set_inner^ ess::clr::set_inner::uni0n(ess::clr::set_inner^ operand) {
+  ess::clr::set_inner^ ret = gcnew ess::clr::set_inner();
+  ret->_name = this->_name + "u" + operand->name;
+  this->_set_instance != nullptr
+    ? ret->set_instance = ess::clr::set_operator::uni0n(this->_set_instance, operand->set_instance)
+    : ret->set_instance = ess::clr::set_operator::uni0n(operand->set_instance, operand->set_instance);
+  return ret;
 };
-__InvokingCLR::Set ^ __InvokingCLR::Set::__compute_s_difference(Set ^ operand) {
-  Set ^ result = gcnew Set();
-  result->name = this->name + "+" + operand->name;
-  this->set != nullptr
-      ? result->set = BasicSetSolving::__s_difference(this->set, operand->set)
-      : result->set =
-            BasicSetSolving::__s_difference(operand->set, operand->set);
-  return result;
+ess::clr::set_inner^ ess::clr::set_inner::intersect(ess::clr::set_inner^ operand) {
+  ess::clr::set_inner^ ret = gcnew ess::clr::set_inner();
+  ret->_name = this->_name + "n" + operand->name;
+  this->_set_instance != nullptr
+    ? ret->set_instance = ess::clr::set_operator::intersect(this->_set_instance, operand->set_instance)
+    : ret->set_instance = ess::clr::set_operator::intersect(operand->set_instance, operand->set_instance);
+  return ret;
 };
-__InvokingCLR::Set ^ __InvokingCLR::Set::__compute_substraction(Set ^ operand) {
-  Set ^ result = gcnew Set();
-  result->name = this->name + "\\" + operand->name;
-  this->set != nullptr
-      ? result->set = BasicSetSolving::__substraction(this->set, operand->set)
-      : result->set =
-            BasicSetSolving::__substraction(operand->set, operand->set);
-  return result;
+ess::clr::set_inner^ ess::clr::set_inner::sdiff(ess::clr::set_inner^ operand) {
+  ess::clr::set_inner^ ret = gcnew ess::clr::set_inner();
+  ret->_name = this->_name + "+" + operand->name;
+  this->_set_instance != nullptr
+    ? ret->set_instance = ess::clr::set_operator::sdiff(this->_set_instance, operand->set_instance)
+    : ret->set_instance = ess::clr::set_operator::sdiff(operand->set_instance, operand->set_instance);
+  return ret;
 };
-__InvokingCLR::Set ^ __InvokingCLR::Set::__compute_complement(Set ^ operand) {
-  Set ^ result = gcnew Set();
-  result->name = "|" + this->name;
-  this->set != nullptr
-      ? result->set = BasicSetSolving::__substraction(operand->set, this->set)
-      : result->set =
-            BasicSetSolving::__substraction(operand->set, operand->set);
-  return result;
+ess::clr::set_inner^ ess::clr::set_inner::substract(ess::clr::set_inner^ operand) {
+  ess::clr::set_inner^ ret = gcnew ess::clr::set_inner();
+  ret->_name = this->_name + "\\" + operand->name;
+  this->_set_instance != nullptr
+    ? ret->set_instance = ess::clr::set_operator::substract(this->_set_instance, operand->set_instance)
+    : ret->set_instance = ess::clr::set_operator::substract(operand->set_instance, operand->set_instance);
+  return ret;
+};
+// TODO: implement
+ess::clr::set_inner^ ess::clr::set_inner::complement(ess::clr::set_inner^ operand) {
+  //ess::clr::set_inner^ ret = gcnew ess::clr::set_inner();
+  //ret->_name = this->_name + "X" + operand->name;
+  //this->_set_instance != nullptr
+  //  ? ret->set_instance = ess::clr::set_operator::X(this->_set_instance, operand->set_instance)
+  //  : ret->set_instance = ess::clr::set_operator::X(operand->set_instance, operand->set_instance);
+  return nullptr;
 };
 
 #pragma unmanaged

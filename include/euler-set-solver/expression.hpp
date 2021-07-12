@@ -12,28 +12,24 @@
 #pragma endregion
 
 #pragma managed
-namespace __InvokingCLR {
-/*
- *	Class which represents the
- *	expression entity
- */
-private ref class Expression {
-public:
-  explicit Expression(System::String ^ token);
-  explicit Expression(System::String ^ token, Expression ^ expr);
-  explicit Expression(System::String ^ token, Expression ^ expr_l,
-                      Expression ^ expr_r);
+namespace ess::clr {
 
-  property System::Collections::Generic::List<Expression ^> ^ Arguments {
-    System::Collections::Generic::List<Expression ^> ^ get(void);
+  private ref class expression {
+  public:
+    explicit expression(System::String^ token);
+    explicit expression(System::String^ token, ess::clr::expression^ expr);
+    explicit expression(System::String^ token, ess::clr::expression^ lhs, ess::clr::expression^ rhs);
+
+    property System::Collections::Generic::List<ess::clr::expression^>^ args {
+      System::Collections::Generic::List<ess::clr::expression^>^ get(void);
+    };
+    property System::String^ token { System::String^ get(void); };
+
+  private:
+    System::String^ _token;
+    System::Collections::Generic::List<ess::clr::expression^>^ _args;
   };
-  property System::String ^ Token { System::String ^ get(void); };
-
-private:
-  System::String ^ token;
-  System::Collections::Generic::List<Expression ^> ^ arguments;
-};
-}; // namespace __InvokingCLR
+}; // namespace ess::clr
 #pragma unmanaged
 
 #endif // !__EXPRESSION_CLI_HPP__

@@ -7,48 +7,42 @@
 
 #pragma managed
 
-using SetOperand = __InvokingCLR::SetOperand;
-
-SetOperand __InvokingCLR::BasicSetSolving::__union(SetOperand left,
-                                                   SetOperand right) {
-  return (System::Linq::Enumerable::Any(left) ||
-                  System::Linq::Enumerable::Any(right)
-              ? Converter::__cli_str_to_list(
-                    System::Text::RegularExpressions::Regex::Replace(
-                        System::String::Join(
-                            " ", System::Linq::Enumerable::Union(left, right)),
-                        "[ ]+", " "))
-              : nullptr);
+ess::clr::set_operand ess::clr::set_operator::uni0n(ess::clr::set_operand lhs, ess::clr::set_operand rhs) {
+  return (System::Linq::Enumerable::Any(lhs) || System::Linq::Enumerable::Any(rhs)
+    ? ess::clr::converter::cli_str_to_list(
+        System::Text::RegularExpressions::Regex::Replace(
+          System::String::Join(" ", System::Linq::Enumerable::Union(lhs, rhs)), "[ ]+", " "
+        )
+      )
+    : nullptr
+  );
 };
-SetOperand __InvokingCLR::BasicSetSolving::__intersection(SetOperand left,
-                                                          SetOperand right) {
-  return (
-      System::Linq::Enumerable::Any(left) ||
-              System::Linq::Enumerable::Any(right)
-          ? Converter::__cli_str_to_list(
-                System::Text::RegularExpressions::Regex::Replace(
-                    System::String::Join(
-                        " ", System::Linq::Enumerable::Intersect(left, right)),
-                    "[ ]+", " "))
-          : nullptr);
+ess::clr::set_operand ess::clr::set_operator::intersect(ess::clr::set_operand lhs, ess::clr::set_operand rhs) {
+  return (System::Linq::Enumerable::Any(lhs) || System::Linq::Enumerable::Any(rhs)
+    ? ess::clr::converter::cli_str_to_list(
+      System::Text::RegularExpressions::Regex::Replace(
+        System::String::Join(" ", System::Linq::Enumerable::Intersect(lhs, rhs)), "[ ]+", " "
+      )
+    )
+    : nullptr
+  );
 };
-SetOperand __InvokingCLR::BasicSetSolving::__substraction(SetOperand left,
-                                                          SetOperand right) {
-  return (System::Linq::Enumerable::Any(left) ||
-                  System::Linq::Enumerable::Any(right)
-              ? Converter::__cli_str_to_list(
-                    System::Text::RegularExpressions::Regex::Replace(
-                        System::String::Join(
-                            " ", System::Linq::Enumerable::Except(left, right)),
-                        "[ ]+", " "))
-              : nullptr);
+ess::clr::set_operand ess::clr::set_operator::substract(ess::clr::set_operand lhs, ess::clr::set_operand rhs) {
+  return (System::Linq::Enumerable::Any(lhs) || System::Linq::Enumerable::Any(rhs)
+    ? ess::clr::converter::cli_str_to_list(
+      System::Text::RegularExpressions::Regex::Replace(
+        System::String::Join(" ", System::Linq::Enumerable::Except(lhs, rhs)), "[ ]+", " "
+      )
+    )
+    : nullptr
+  );
 };
-SetOperand __InvokingCLR::BasicSetSolving::__s_difference(SetOperand left,
-                                                          SetOperand right) {
-  auto su1 = BasicSetSolving::__substraction(left, right);
-  auto su2 = BasicSetSolving::__substraction(right, left);
-  return BasicSetSolving::__union(su1, su2);
-}
+ess::clr::set_operand ess::clr::set_operator::sdiff(ess::clr::set_operand lhs, ess::clr::set_operand rhs) {
+  return ess::clr::set_operator::uni0n(
+    ess::clr::set_operator::substract(lhs, rhs),
+    ess::clr::set_operator::substract(rhs, lhs)
+  );
+};
 
 #pragma unmanaged
 #pragma warning(pop)

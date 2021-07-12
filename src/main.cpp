@@ -3,34 +3,14 @@
 #pragma warning(disable : 4267)
 #pragma warning(disable : 4506)
 
-#pragma unmanaged
+#include <euler-set-solver/app.hpp>
 
-#include <euler-set-solver/parser.hpp>
-
-#include <iostream>
-#include <stdexcept>
-
-/*
- *	Entry Point: managed code
- */
 #pragma managed
+
 int __cdecl main(void) {
-  bool is_throw = false;
-  try {
-    __InvokingCLR::Parsing::Run();
-    System::Console::WriteLine("\n\nPress any key to exit...");
-  } catch (System::Exception ^ ex) {
-    System::Console::WriteLine(ex->Message);
-    is_throw = !is_throw;
-  } catch (std::exception &ex) {
-    std::cout << ex.what();
-    is_throw = !is_throw;
-  } finally {
-    if (is_throw)
-      std::cout << "\n\nAn error has occurred... Press any key to exit...\n";
-  };
-  std::cin.get();
+  ess::clr::app::run();
   return 0;
 };
+
 #pragma unmanaged
 #pragma warning(pop)
