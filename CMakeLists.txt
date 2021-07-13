@@ -88,7 +88,7 @@ if (WIN32 AND CMAKE_GENERATOR MATCHES "Visual Studio")
 #endregion
 
   add_executable(euler-set-solver)
-  target_compile_features(euler-set-solver PUBLIC cxx_std_17)
+  target_compile_features(euler-set-solver PRIVATE cxx_std_17)
 
   # .NET Framework only(?)
   set(DOTNETF_VERSION "v4.8")
@@ -110,7 +110,7 @@ if (WIN32 AND CMAKE_GENERATOR MATCHES "Visual Studio")
     ${CMAKE_CURRENT_SOURCE_DIR}/src/expression.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/set.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/set-op.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/set-operator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/app.cpp
   )
   target_include_directories(euler-set-solver PRIVATE

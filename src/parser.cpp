@@ -1,27 +1,31 @@
 #pragma warning(push)
-#pragma warning(disable : 4677)
-#pragma warning(disable : 4267)
-#pragma warning(disable : 4506)
+#pragma warning(disable: 4267)
+#pragma warning(disable: 4506)
+#pragma warning(disable: 4677)
+#pragma warning(disable: 4715)
 
 #include <euler-set-solver/parser.hpp>
 
 #pragma managed
+namespace ess::clr {
 
 ess::clr::parser::parser(System::String^ expr)
   : _iterator(0), _current_operation(1) {
   this->_expr = expr->Replace(" ", "");
-  this->_tokens = ess::clr::converter::cli_str_to_list("( ) u n \\ + |");
-  this->_sets = gcnew System::Collections::Generic::Dictionary<System::String^, ess::clr::set_inner^>();
+  this->_tokens = ess::clr::converter::cli_str_to_cli_list("( ) u n \\ + |");
+  this->_sets = gcnew System::Collections::Generic::Dictionary<System::String^, ess::clr::set^>();
 };
+
 System::String^ ess::clr::parser::current_operation::get(void) {
   return this->_current_operation + ": ";
 };
 ess::clr::set_dict ess::clr::parser::sets::get(void) {
   return this->_sets;
 };
+
 ess::clr::set_dict ess::clr::parser::dict(void) {
   int iterator = 0;
-  ess::clr::set_dict dict = gcnew System::Collections::Generic::Dictionary<System::String^, ess::clr::set_inner^>();
+  ess::clr::set_dict dict = gcnew System::Collections::Generic::Dictionary<System::String^, ess::clr::set^>();
 
   while (this->_expr->Length > iterator) {
     if (System::Char::IsUpper(this->_expr[iterator])) {
@@ -32,7 +36,7 @@ ess::clr::set_dict ess::clr::parser::dict(void) {
         ++iterator;
       }
 
-      dict[name] = gcnew ess::clr::set_inner(ess::clr::set_operand(), name);
+      dict[name] = gcnew ess::clr::set(ess::clr::set_operand(), name);
     }
     else {
       iterator++;
@@ -40,14 +44,18 @@ ess::clr::set_dict ess::clr::parser::dict(void) {
   }
   return dict;
 };
-ess::clr::set_inner^ ess::clr::parser::resolve(void) {
+ess::clr::set^ ess::clr::parser::resolve(void) {
   return this->_evaluate(this->_parse());
 };
+
 int ess::clr::parser::_get_priority(System::String^ token) {
-  if (ess::clr::converter::cli_str_to_list("u n \\ + |")->Contains(token)) {
+  if (ess::clr::converter::cli_str_to_cli_list("u n \\ + |")->Contains(token)) {
     return 1;
   }
   return 0;
+};
+ess::clr::expression^ ess::clr::parser::_parse(void) {
+  return this->_parse_binary_expr(0);
 };
 System::String^ ess::clr::parser::_parse_token(void) {
   if (this->_iterator < this->_expr->Length) {
@@ -70,26 +78,7 @@ System::String^ ess::clr::parser::_parse_token(void) {
 
   return gcnew System::String("");
 };
-ess::clr::expression^ ess::clr::parser::_parse_be(int min_p) {
-  ess::clr::expression^ lhs = this->_parse_se();
-
-  while (true) {
-    System::String^ token = this->_parse_token();
-    int priority = this->_get_priority(token);
-
-    if (priority <= min_p) {
-      this->_iterator -= token->Length;
-      return lhs;
-    }
-
-    ess::clr::expression^ rhs = this->_parse_be(priority);
-    lhs = gcnew ess::clr::expression(token, lhs, rhs);
-  }
-};
-ess::clr::expression^ ess::clr::parser::_parse(void) {
-  return this->_parse_be(0);
-};
-ess::clr::expression^ ess::clr::parser::_parse_se(void) {
+ess::clr::expression^ ess::clr::parser::_parse_unary_expr(void) {
   System::String^ token = this->_parse_token();
   if (!token) {
     throw gcnew System::Exception("invalid input");
@@ -108,36 +97,52 @@ ess::clr::expression^ ess::clr::parser::_parse_se(void) {
     return ret;
   }
 
-  return gcnew ess::clr::expression(token, this->_parse_se());
+  return gcnew ess::clr::expression(token, this->_parse_unary_expr());
 };
-ess::clr::set_inner^ ess::clr::parser::_evaluate(ess::clr::expression^ expr) {
+ess::clr::expression^ ess::clr::parser::_parse_binary_expr(int min_p) {
+  ess::clr::expression^ lhs = this->_parse_unary_expr();
+
+  while (true) {
+    System::String^ token = this->_parse_token();
+    int priority = this->_get_priority(token);
+
+    if (priority <= min_p) {
+      this->_iterator -= token->Length;
+      return lhs;
+    }
+
+    ess::clr::expression^ rhs = this->_parse_binary_expr(priority);
+    lhs = gcnew ess::clr::expression(token, lhs, rhs);
+  }
+};
+ess::clr::set^ ess::clr::parser::_evaluate(ess::clr::expression^ expr) {
   if (expr->args == nullptr) {
     return this->_sets[expr->token];
   }
 
   switch (expr->args->Count) {
   case 1: {
-    ess::clr::set_inner^ set = this->_evaluate(expr->args[0]);
+    ess::clr::set^ set = this->_evaluate(expr->args[0]);
 
-    System::Console::Write(this->_current_operation + " ");
+    System::Console::Write(this->_current_operation + ")\t");
     System::Console::ForegroundColor = System::ConsoleColor::Red;
     System::Console::Write(expr->token);
     System::Console::ResetColor();
     System::Console::WriteLine(set->name);
 
-    System::Console::Write("A:  " + expr->token + "{" +
+    System::Console::Write("==>\t" + expr->token + "{" +
       cli::safe_cast<System::String^>(set) + "} = ");
 
     this->_current_operation++;
 
     if (expr->token == "|") {
-      ess::clr::set_inner^ uni = gcnew ::ess::clr::set_inner();
+      ess::clr::set^ uni = gcnew ::ess::clr::set();
 
       for each (auto elem in this->_sets) {
         uni = uni->uni0n(elem.Value);
       }
 
-      System::Console::WriteLine("{" + cli::safe_cast<System::String^>(set->complement(uni)) + "}");
+      System::Console::WriteLine("{" + cli::safe_cast<System::String^>(set->complement(uni)) + "}\n");
       return set->complement(uni);
     }
 
@@ -146,15 +151,15 @@ ess::clr::set_inner^ ess::clr::parser::_evaluate(ess::clr::expression^ expr) {
     break;
   }
   case 2: {
-    ess::clr::set_inner^ lhs = this->_evaluate(expr->args[0]);
-    ess::clr::set_inner^ rhs = this->_evaluate(expr->args[1]);
+    ess::clr::set^ lhs = this->_evaluate(expr->args[0]);
+    ess::clr::set^ rhs = this->_evaluate(expr->args[1]);
 
-    System::Console::Write(this->_current_operation + " " + lhs->name + " ");
+    System::Console::Write(this->_current_operation + ")\t" + lhs->name + " ");
     System::Console::ForegroundColor = System::ConsoleColor::Red;
     System::Console::Write(expr->token);
     System::Console::ResetColor();
-    System::Console::Write(" " + rhs->name + "\n");
-    System::Console::Write("A:  {" + cli::safe_cast<System::String^>(lhs) + "} " +
+    System::Console::WriteLine(" " + rhs->name);
+    System::Console::Write("==>\t{" + cli::safe_cast<System::String^>(lhs) + "} " +
       expr->token + " {" + cli::safe_cast<System::String^>(rhs) + "} = ");
 
     this->_current_operation++;
@@ -162,25 +167,25 @@ ess::clr::set_inner^ ess::clr::parser::_evaluate(ess::clr::expression^ expr) {
     char token = ess::clr::converter::cli_str_to_std_str(expr->token).c_str()[0];
     switch (token) {
     case 'u': {
-      System::Console::WriteLine("{" + cli::safe_cast<System::String^>(lhs->uni0n(rhs)) + "}");
+      System::Console::WriteLine("{" + cli::safe_cast<System::String^>(lhs->uni0n(rhs)) + "}\n");
       return lhs->uni0n(rhs);
 
       break;
     }
     case 'n': {
-      System::Console::WriteLine("{" + cli::safe_cast<System::String^>(lhs->intersect(rhs)) + "}");
+      System::Console::WriteLine("{" + cli::safe_cast<System::String^>(lhs->intersect(rhs)) + "}\n");
       return lhs->intersect(rhs);
 
       break;
     }
     case '\\': {
-      System::Console::WriteLine("{" + cli::safe_cast<System::String^>(lhs->substract(rhs)) + "}");
+      System::Console::WriteLine("{" + cli::safe_cast<System::String^>(lhs->substract(rhs)) + "}\n");
       return lhs->substract(rhs);
 
       break;
     }
     case '+': {
-      System::Console::WriteLine("{" + cli::safe_cast<System::String^>(lhs->sdiff(rhs)) + "}");
+      System::Console::WriteLine("{" + cli::safe_cast<System::String^>(lhs->sdiff(rhs)) + "}\n");
       return lhs->sdiff(rhs);
 
       break;
@@ -196,5 +201,6 @@ ess::clr::set_inner^ ess::clr::parser::_evaluate(ess::clr::expression^ expr) {
   }
 };
 
-#pragma unmanaged
+}; // namespace ess::clr
+
 #pragma warning(pop)

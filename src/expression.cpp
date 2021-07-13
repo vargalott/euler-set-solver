@@ -1,11 +1,13 @@
 #pragma warning(push)
-#pragma warning(disable : 4677)
-#pragma warning(disable : 4267)
-#pragma warning(disable : 4506)
+#pragma warning(disable: 4267)
+#pragma warning(disable: 4506)
+#pragma warning(disable: 4677)
+#pragma warning(disable: 4715)
 
 #include <euler-set-solver/expression.hpp>
 
 #pragma managed
+namespace ess::clr {
 
 ess::clr::expression::expression(System::String^ token) : _token(token) {};
 ess::clr::expression::expression(System::String^ token, ess::clr::expression^ expr) : _token(token) {
@@ -17,6 +19,7 @@ ess::clr::expression::expression(System::String^ token, ess::clr::expression^ lh
   this->_args->Add(lhs);
   this->_args->Add(rhs);
 };
+
 System::Collections::Generic::List<ess::clr::expression^>^ ess::clr::expression::args::get(void) {
   return this->_args;
 };
@@ -24,5 +27,6 @@ System::String^ ess::clr::expression::token::get(void) {
   return this->_token;
 };
 
-#pragma unmanaged
+}; // namespace ess::clr
+
 #pragma warning(pop)

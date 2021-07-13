@@ -1,15 +1,15 @@
 version: "3"
 
 tasks:
-  init:
-    cmds:
-      - git submodule init
-      - git submodule update --init --recursive
-
-  # on Visual Studio based generators CMAKE_EXPORT_COMPILE_COMMANDS will be omitted
+  # on Visual Studio based generators CMAKE_EXPORT_COMPILE_COMMANDS and CMAKE_BUILD_TYPE will be omitted
   configure:
     cmds:
-      - cmake -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=True -B ./build -G "{{.CLI_ARGS}}"
+      - cmake -B ./build -G "{{.CLI_ARGS}}"
+
+  vsconfigure:
+    cmds:
+      - task: configure
+        vars: {CLI_ARGS: "Visual Studio 16 2019"}
 
   build_debug:
     cmds:

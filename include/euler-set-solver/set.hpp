@@ -2,74 +2,108 @@
 #ifndef __SET_CLI_HPP__
 #define __SET_CLI_HPP__
 
-/*
- *	Global includes, cli dll exports
- */
-#pragma region GIE
 #pragma managed
-
 #include <euler-set-solver/converter.hpp>
-#include <euler-set-solver/set-op.hpp>
+#include <euler-set-solver/set-operator.hpp>
 
-#pragma unmanaged
-#pragma endregion
 
 #pragma managed
-
 namespace ess::clr {
-  using set_operand = System::Collections::Generic::List<System::String^>^;
 
-  /*
-   *	Class implements the representation of
-   *	Set operand with needed operation
+using set_operand = System::Collections::Generic::List<System::String^>^;
+
+/**
+ * Core set class
+ *
+ * ...
+ *
+ * Implements ball internal set functionality
+ */
+private ref class set {
+public:
+  /**
+   * Class construnctor
+   * Permorm construnction of an empty instance of the set
    */
-  private ref class set_inner {
-  public:
-    explicit set_inner(void);
-    explicit set_inner(ess::clr::set_operand set, System::String^ name);
+  explicit set(void);
+  /**
+   * Class construnctor
+   * Permorm construnction of the instance of the set
+   *
+   * @param[in] set Set's data
+   * @param[in] name Set's name
+   */
+  explicit set(ess::clr::set_operand set, System::String^ name);
 
-    explicit operator System::String^ (void);
+  /**
+   * Perform explicit cast to the string
+   */
+  explicit operator System::String^ (void);
 
-    property System::String^ name {
-      System::String^ get(void);
-    };
-    property ess::clr::set_operand set_instance {
-      ess::clr::set_operand get(void);
-      void set(ess::clr::set_operand _set_instance);
-    };
-
-    /*
-     *	Computing sets union
-     *	openard to parse - "u"
+  /**
+   * Class field property: name
+   */
+  property System::String^ name {
+    /**
+     * Get the set's name
      */
-    ess::clr::set_inner^ uni0n(ess::clr::set_inner^ operand);
-    /*
-     *	Computing sets intersection
-     *	openard to parse - "n"
-     */
-    ess::clr::set_inner^ intersect(ess::clr::set_inner^ operand);
-    /*
-     *	Computing sets complement
-     *	openard to parse - "+"
-     */
-    ess::clr::set_inner^ sdiff(ess::clr::set_inner^ operand);
-    /*
-     *	Computing sets substraction
-     *	openard to parse - "\"
-     */
-    ess::clr::set_inner^ substract(ess::clr::set_inner^ operand);
-    /*
-     *	Computing sets addition
-     *	openard to parse - "_"
-     */
-    ess::clr::set_inner^ complement(ess::clr::set_inner^ operand);
-
-  private:
-    ess::clr::set_operand _set_instance;
-    System::String^ _name;
+    System::String^ get(void);
   };
-}; // namespace ess::clr
+  /**
+   * Class field property: set_instance
+   */
+  property ess::clr::set_operand set_instance {
+    /**
+     * Get the current list of the set's data
+     */
+    ess::clr::set_operand get(void);
+    /**
+     * Set the set's data
+     */
+    void set(ess::clr::set_operand _set_instance);
+  };
 
-#pragma unmanaged
+  /**
+   * Perform union for a given instance of set;
+   * parse operator - "u"
+   *
+   * @param[in] operand right-hand set operand
+   */
+  ess::clr::set^ uni0n(ess::clr::set^ operand);
+  /**
+   * Perform intersection for a given instance of set;
+   * parse operator - "n"
+   *
+   * @param[in] operand right-hand set operand
+   */
+  ess::clr::set^ intersect(ess::clr::set^ operand);
+  /**
+   * Perform substraction for a given instance of set;
+   * parse operator - "\"
+   *
+   * @param[in] operand right-hand set operand
+   */
+  ess::clr::set^ substract(ess::clr::set^ operand);
+  /**
+   * Perform symmetric difference for a given instance of set;
+   * parse operator - "+"
+   *
+   * @param[in] operand right-hand set operand
+   */
+  ess::clr::set^ sdiff(ess::clr::set^ operand);
+  /**
+   * Perform complemention for a given instance of set;
+   * parse operator - "_" ("|")
+   *
+   * @param[in] operand right-hand set operand
+   */
+  [[maybe_unused]] ess::clr::set^ complement(ess::clr::set^ operand);
+
+private:
+  ess::clr::set_operand _set_instance;
+  System::String^ _name;
+};
+
+}; // namespace ess::clr
 
 #endif // !__SET_CLI_HPP__

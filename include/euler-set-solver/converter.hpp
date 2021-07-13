@@ -2,42 +2,58 @@
 #ifndef __CONVERTER_CLI_HPP__
 #define __CONVERTER_CLI_HPP__
 
-/*
- *	Global includes, cli dll exports
- */
-#pragma region GIE
-#pragma unmanaged
-
-#include <string>
-
 #pragma managed
-
 #include <msclr\marshal_cppstd.h>
 #include <vcclr.h>
 
 #pragma unmanaged
-#pragma endregion
+#include <string>
+
 
 #pragma managed
-
 namespace ess::clr {
-  using set_operand = System::Collections::Generic::List<System::String^>^;
 
-  /*
-   *	Some converting c++17/cli <-> c++17
+using set_operand = System::Collections::Generic::List<System::String^>^;
+
+/**
+ * Data types converter class
+ *
+ * ...
+ *
+ * Implements some necessary converts c++/cli <-> stdc++
+ */
+public ref class converter {
+public:
+  /**
+   * Perform converting to c++/cli string for a given
+   * instance of stdc++ string
+   *
+   * @param[in] str Instance of std::string const& (stdc++)
    */
-  public ref class converter {
-  public:
-    static System::String^ std_str_to_cli_str(std::string const& str);
-    static std::string cli_str_to_std_str(System::String^ str);
+  static System::String^ std_str_to_cli_str(std::string const& str);
+  /**
+   * Perform converting to stdc++ string for a given
+   * instance of c++/cli string
+   *
+   * @param[in] str Instance of System::String^ (c++/cli)
+   */
+  static std::string cli_str_to_std_str(System::String^ str);
+  /**
+   * Perform converting to c++cli list of string for a given
+   * instance of c++/cli string
+   *
+   * @param[in] str Instance of System::String^ (c++/cli)
+   */
+  static ess::clr::set_operand cli_str_to_cli_list(System::String^ str);
+  /**
+   * Perform converting to a c++/cli string for a given
+   * instance of c++cli list of string
+   *
+   * @param[in] set_operand Instance of ess::clr::set_operand (c++/cli)
+   */
+  static System::String^ cli_list_to_cli_str(ess::clr::set_operand set_operand);
+};
 
-    static ess::clr::set_operand cli_str_to_list(System::String^ str);
-    static System::String^ list_to_cli_str(ess::clr::set_operand set_operand);
-
-    static ess::clr::set_operand make_set_from_list(ess::clr::set_operand list);
-  };
 }; // namespace ess::clr
-
-#pragma unmanaged
 
 #endif // !__CONVERTER_CLI_HPP__
