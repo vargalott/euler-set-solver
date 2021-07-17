@@ -1,5 +1,8 @@
 # euler-set-solver
 
+[![Build](https://github.com/andinoriel/euler-set-solver/actions/workflows/build.yml/badge.svg)](https://github.com/andinoriel/euler-set-solver/actions/workflows/build.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 euler-set-solver - recursive descent parser that design for evaluating and solving expressions of the set theory.
 
 euler-set-solver written on C++/Cli which means(for now, at least) that you can only use this project on Windows
