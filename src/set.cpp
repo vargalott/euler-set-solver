@@ -30,6 +30,9 @@ ess::clr::set::operator System::String^ (void) {
     return "{}";
   }
 };
+bool ess::clr::set::operator==(ess::clr::set^ set) {
+  return System::Linq::Enumerable::SequenceEqual(this->_set_instance, set->set_instance) == true;
+};
 
 System::String^ ess::clr::set::name::get(void) {
   return this->_name;

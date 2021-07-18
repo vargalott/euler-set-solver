@@ -41,6 +41,13 @@ public:
   explicit operator System::String^ (void);
 
   /**
+   * Perform sets comparasion
+   *
+   * @param[in] set set to compare
+   */
+  bool operator==(ess::clr::set^ set);
+
+  /**
    * Class field property: name
    */
   property System::String^ name {
