@@ -34,7 +34,7 @@ $ task configure -- <preferred generator>
 > $ task vsconfigure
 > ```
 
-1. Run the build command or open Visual Studio solution in the ./build diirectory for manual build:
+1. Run the build command or open Visual Studio solution in the ./build directory for manual build:
 ```
 $ cmake --build ./build --config <Debug|Release>
 
@@ -44,6 +44,28 @@ $ task build_<debug|release>
 ```
 
 4. You've done! The builded binary file available in the build directory.
+
+## Testing
+
+To run project tests:
+
+1. Configure the project:
+```
+$ cmake -B ./build -G <preferred generator>
+
+OR
+
+$ task configure -- <preferred generator>
+```
+
+2. Run tests command:
+```
+$ cmake --build ./build --config <Debug|Release> --target run-tests
+
+OR
+
+$ task test
+```
 
 # Screenshots
 
