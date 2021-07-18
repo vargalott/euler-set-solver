@@ -19,6 +19,10 @@ tasks:
     cmds:
       - cmake --build ./build --config Release
 
+  test:
+    cmds:
+      - cmake --build ./build --target run-tests
+
   clean:
     cmds:
       - cmake --build ./build --target clean

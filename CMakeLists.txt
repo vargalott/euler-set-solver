@@ -85,27 +85,36 @@ if (WIN32 AND CMAKE_GENERATOR MATCHES "Visual Studio")
     set_target_properties(${TARGET} PROPERTIES VS_DOTNET_REFERENCES "${DOTNET_REFS}")
   endmacro()
 
-#endregion
+  #
+  # apply necessary .NET Framework target properties for a given target
+  #
+  # result value is not provided
+  #
+  macro(init_netf_target TARGET)
+    target_compile_features(${TARGET} PRIVATE cxx_std_17)
 
-  add_executable(euler-set-solver)
-  target_compile_features(euler-set-solver PRIVATE cxx_std_17)
+    set_target_properties(${TARGET} PROPERTIES COMMON_LANGUAGE_RUNTIME "")
+    set_target_properties(${TARGET} PROPERTIES DOTNET_TARGET_FRAMEWORK_VERSION "${DOTNETF_VERSION}")
+    set_target_properties(${TARGET} PROPERTIES VS_DOTNET_REFERENCES "${DOTNET_REFS}")
+  endmacro()
+
+#endregion
 
   # .NET Framework only(?)
   set(DOTNETF_VERSION "v4.8")
   # standart .NET references
-  set(DOTNET_REFS "System;System.Core;System.Drawing")
+  set(DOTNET_REFS "System;System.Core")
 
-  set_target_properties(euler-set-solver PROPERTIES COMMON_LANGUAGE_RUNTIME "")
-  set_target_properties(euler-set-solver PROPERTIES DOTNET_TARGET_FRAMEWORK_VERSION "${DOTNETF_VERSION}")
-  set_target_properties(euler-set-solver PROPERTIES VS_DOTNET_REFERENCES "${DOTNET_REFS}")
+  # ====================================================================================
+  #                                 base target - module
+  # ====================================================================================
 
-  # nuget_pkg_add(euler-set-solver Wolfram.Alpha 1.0.7)
-  # nuget_pkg_add(euler-set-solver Newtonsoft.Json 10.0.3)
-  nuget_pkg_add(euler-set-solver Colorful.Console 1.2.9)
+  add_library(${PROJECT_NAME}_objs MODULE EXCLUDE_FROM_ALL)
+  init_netf_target(${PROJECT_NAME}_objs)
 
-  target_sources(euler-set-solver PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+  nuget_pkg_add(${PROJECT_NAME}_objs  Colorful.Console 1.2.9)
 
+  target_sources(${PROJECT_NAME}_objs PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/converter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/expression.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
@@ -113,8 +122,55 @@ if (WIN32 AND CMAKE_GENERATOR MATCHES "Visual Studio")
     ${CMAKE_CURRENT_SOURCE_DIR}/src/set-operator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/app.cpp
   )
-  target_include_directories(euler-set-solver PRIVATE
+  target_include_directories(${PROJECT_NAME}_objs PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
   )
+
+  # ====================================================================================
+  #                            euler-set-solver target - main
+  # ====================================================================================
+
+  add_executable(${PROJECT_NAME})
+  add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_objs)
+  init_netf_target(${PROJECT_NAME})
+
+  target_sources(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+  )
+  target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+  target_link_libraries(${PROJECT_NAME} PRIVATE
+    $<TARGET_OBJECTS:${PROJECT_NAME}_objs>
+  )
+
+  # ====================================================================================
+  #                                     tests target
+  # ====================================================================================
+
+  add_subdirectory(extern/Catch2)
+
+  add_executable(tests EXCLUDE_FROM_ALL)
+  add_dependencies(tests ${PROJECT_NAME}_objs)
+  init_netf_target(tests)
+
+  target_sources(tests PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/tests.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/set-operator-tests.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/converter-tests.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/parser-tests.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/set-tests.cpp
+  )
+  target_include_directories(tests PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+  target_link_libraries(tests PRIVATE
+    Catch2::Catch2
+    $<TARGET_OBJECTS:${PROJECT_NAME}_objs>
+  )
+
+  add_custom_target(run-tests COMMAND $<TARGET_FILE:tests>)
+  add_dependencies(run-tests tests)
 
 endif()
