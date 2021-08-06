@@ -1,8 +1,9 @@
 #include <catch2/catch.hpp>
 
+#include <euler-set-solver/utility.hpp>
 #include <euler-set-solver/set.hpp>
 
-#include "utility.hpp"
+#pragma managed
 
 /**
  * ess::clr::set::uni0n test

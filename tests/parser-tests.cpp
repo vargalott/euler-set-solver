@@ -1,8 +1,9 @@
 #include <catch2/catch.hpp>
 
+#include <euler-set-solver/utility.hpp>
 #include <euler-set-solver/parser.hpp>
 
-#include "utility.hpp"
+#pragma managed
 
 /**
  * ess::clr::parser::dict test

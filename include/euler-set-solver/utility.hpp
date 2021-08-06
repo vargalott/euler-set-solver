@@ -2,6 +2,8 @@
 #ifndef __UTILITY_CLI_HPP__
 #define __UTILITY_CLI_HPP__
 
+#include <catch2/catch.hpp>
+
 /**
  * Wrap given values into cli::array then convert to ess::clr::set_operand
  */

@@ -1,8 +1,7 @@
 #include <catch2/catch.hpp>
 
+#include <euler-set-solver/utility.hpp>
 #include <euler-set-solver/set-operator.hpp>
-
-#include "utility.hpp"
 
 #pragma managed
 
