@@ -1,6 +1,6 @@
 # euler-set-solver
 
-[![Build](https://github.com/andinoriel/euler-set-solver/actions/workflows/build.yml/badge.svg)](https://github.com/andinoriel/euler-set-solver/actions/workflows/build.yml)
+[![Build](https://github.com/vargalott/euler-set-solver/actions/workflows/build.yml/badge.svg)](https://github.com/vargalott/euler-set-solver/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 euler-set-solver - recursive descent parser that design for evaluating and solving expressions of the set theory.
